@@ -7,6 +7,10 @@ from keras.models import Sequential, load_model
 from keras.utils import plot_model, np_utils
 import time
 
+from keras.models import Model
+from keras.layers import Dense, Input
+from keras.layers import Conv2D, MaxPooling2D, Flatten
+
 np.set_printoptions(threshold=np.nan)
 
 matrixList = []
@@ -55,21 +59,9 @@ numOfSet = int(matrixVec.shape[0])
 
 print(matrixVec.shape)
 
-max = 0
-if (matrixDim <= 8):
-    max = 2
-elif ((matrixDim <= 16) or (matrixDim <= 32) or (matrixDim <= 64)):
-    max = 4
-elif ((matrixDim <= 128) or (matrixDim <= 256) or (matrixDim <= 512)):
-    max = 8
-elif ((matrixDim <= 1024) or (matrixDim <= 2048)):
-    max = 16
-
 mappingList = []
 mappingFiles = os.listdir("./pred/test")
 mappingFiles.sort(key=lambda x: int(x[7:]))
-
-step = 1.0 / (max - 1.0)
 
 persent = -1
 print('> Readind mapping data...')
@@ -100,6 +92,45 @@ model = Sequential()
 # model = load_model('/mnt/f/prog/magadisser/neuralKeras/nets/goodNet3.h5')
 model = load_model('./nets/goodNet3.h5')
 # plot_model(model, to_file='model.png')
+
+if 1 == 1:
+    img_input = Input(shape=[256, 256, 1])
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(img_input)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
+
+    # Block 2
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
+
+    # Block 3
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
+
+    # Block 4
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv1')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(x)
+
+    # Block 5
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
+
+    x = Flatten(name='flatten')(x)
+    x = Dense(4096, activation='relu', name='fc1')(x)
+    x = Dense(4096, activation='relu', name='fc2')(x)
+    x = Dense(7, activation='softmax', name='predictions')(x)
+
+    model = Model(inputs=img_input, outputs=x)
 
 persent = -1
 print('> Predict on test data...')

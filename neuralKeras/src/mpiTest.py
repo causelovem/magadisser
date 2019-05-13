@@ -3,6 +3,7 @@ import os
 # import sys
 import numpy as np
 
+from keras.applications.vgg19 import VGG19
 from keras.models import Sequential, load_model, Model
 from keras.layers import Dense, Dropout, ZeroPadding2D, AveragePooling2D, Input
 from keras.layers import Conv2D, MaxPooling2D, Flatten, BatchNormalization
@@ -112,7 +113,48 @@ numFilt = 16
 convSize = 3
 paddSize = 1
 # model = Sequential()
-model = load_model('/mnt/f/prog/magadisser/neuralKeras/nets/goodNet3.h5')
+# model = load_model('/mnt/f/prog/magadisser/neuralKeras/nets/goodNet3.h5')
+
+if 1 == 1:
+    img_input = Input(shape=[256, 256, 1])
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(img_input)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
+
+    # Block 2
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
+
+    # Block 3
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
+
+    # Block 4
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv1')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(x)
+
+    # Block 5
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
+    x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
+
+    x = Flatten(name='flatten')(x)
+    x = Dense(4096, activation='relu', name='fc1')(x)
+    x = Dense(4096, activation='relu', name='fc2')(x)
+    x = Dense(7, activation='softmax', name='predictions')(x)
+
+    model = Model(inputs=img_input, outputs=x)
+
+
 modelLen = len(model.layers)
 
 numOfLayers = modelLen // size
@@ -198,19 +240,21 @@ for i in range(lenMatrixVec):
         # pred = modelDiv.predict(matrixVec[i:i + 1])
         # comm.send(pred, dest=1, tag=0)
         # req = comm.isend(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-        comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-
+        req = comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
+        print(rank, 'isend')
         # if (i == lenMatrixVec - 1):
         #     req.wait()
         #     print(rank, 'send')
     elif (rank != size - 1):
         pred = modelDiv.predict(comm.recv(source=(rank - 1), tag=0))
+        print(rank, 'recv')
         comm.send(pred, dest=(rank + 1), tag=0)
+        print(rank, 'isend')
     elif (rank == size - 1):
         # tmp = comm.recv(source=0, tag=0)
         # pred = modelDiv.predict(tmp)
-
         pred = modelDiv.predict(comm.recv(source=(rank - 1), tag=0))
+        print(rank, 'recv')
         # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
         # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
 
