@@ -15,6 +15,7 @@ from keras.utils import plot_model, normalize, np_utils
 
 from mpi4py import MPI as mpi
 import queue as qu
+from time import sleep
 
 np.set_printoptions(threshold=np.nan)
 
@@ -123,53 +124,53 @@ if 1 == 1:
     img_input = Input(shape=[256, 256, 1])
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(img_input)
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv3')(x)
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv4')(x)
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv5')(x)
-    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv6')(x)
+    # x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv3')(x)
+    # x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv4')(x)
+    # x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv5')(x)
+    # x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
 
     # Block 2
     x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
     x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
-    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv3')(x)
-    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv4')(x)
-    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv5')(x)
-    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv6')(x)
+    # x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv3')(x)
+    # x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv4')(x)
+    # x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv5')(x)
+    # x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
 
     # Block 3
     x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1')(x)
     x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2')(x)
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv5')(x)
-    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv6')(x)
+    # x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
+    # x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
+    # x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv5')(x)
+    # x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
 
     # Block 4
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv1')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(x)
-    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
-    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
-    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv5')(x)
-    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv6')(x)
+    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
+    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
+    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv5')(x)
+    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(x)
 
     # Block 5
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(x)
-    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
-    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
-    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv5')(x)
-    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv6')(x)
+    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
+    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
+    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv5')(x)
+    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
 
     x = Flatten(name='flatten')(x)
     x = Dense(4096, activation='relu', name='fc1')(x)
-    x = Dense(4096, activation='relu', name='fc2')(x)
-    x = Dense(4096, activation='relu', name='fc3')(x)
-    x = Dense(4096, activation='relu', name='fc4')(x)
+    # x = Dense(4096, activation='relu', name='fc2')(x)
+    # x = Dense(4096, activation='relu', name='fc3')(x)
+    # x = Dense(4096, activation='relu', name='fc4')(x)
     x = Dense(7, activation='softmax', name='predictions')(x)
 
     model = Model(inputs=img_input, outputs=x)
@@ -247,10 +248,34 @@ if 0 == 1:
             bias = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/biase" + str((i + 1 + 10)) + ".npy")
             model.get_layer(index=(i + 1)).set_weights([weig, bias])
 
+prevRank = rank - 1
+nextRank = rank + 1
+
 persent = -1
 print('> Predict on test data...')
 t1 = mpi.Wtime()
 # lenMatrixVec = len(matrixVec)
+for i in range(lenMatrixVec):
+    persent += 1
+    print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
+    print('\r', end='')
+
+    if (rank == 0):
+        req = comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
+    elif (rank != size - 1):
+        pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
+        comm.send(pred, dest=nextRank, tag=0)
+    elif (rank == size - 1):
+        pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
+        # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
+        # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
+
+        # fileOut.write(str(np.where(pred == pred.max())[1][0]))
+        # fileOut.write('\n')
+        # # print(str(np.where(pred == pred.max())))
+        # # print(str(np.where(pred == pred.max())[1][0]))
+        # fileOut.close()
+
 # for i in range(lenMatrixVec):
 #     persent += 1
 #     print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
@@ -260,21 +285,54 @@ t1 = mpi.Wtime()
 #         # pred = modelDiv.predict(matrixVec[i:i + 1])
 #         # comm.send(pred, dest=1, tag=0)
 #         # req = comm.isend(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-#         req = comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-#         # print(rank, 'isend')
+#         data = modelDiv.predict(matrixVec[i:i + 1])
+#         # data = np.zeros(shape=(1, 32, 32, 256), dtype='float32')
+#         # data = np.zeros(shape=262144, dtype='float32')
+#         # data = np.zeros(shape=(1, 32, 32, 256), dtype='i')
+#         # li.append(data)
+#         # if i == 0:
+#         #     comm.send([data.shape, data.dtype], dest=1, tag=0)
+#         # print(data.size, data.shape)
+#         # req = comm.Isend(data, dest=1, tag=0)
+#         req = comm.isend(data, dest=1, tag=0)
+#         print(rank, 'isend')
+#         li.append(req)
+#         if (i == 5):
+#             for ll in li:
+#                 ll.wait()
+#         # req.wait()
 #         # if (i == lenMatrixVec - 1):
 #         #     req.wait()
 #         #     print(rank, 'send')
 #     elif (rank != size - 1):
-#         pred = modelDiv.predict(comm.recv(source=(rank - 1), tag=0))
+#         data = comm.recv(source=prevRank, tag=0)
+#         comm.isend(data, dest=nextRank, tag=0)
 #         # print(rank, 'recv')
-#         comm.send(pred, dest=(rank + 1), tag=0)
-#         # print(rank, 'isend')
+#         # while 1:
+#         #     d = data.test()
+#         #     if d[0]:
+#         #         comm.isend(modelDiv.predict(d[1]), dest=nextRank, tag=0)
+#         #         break
+#         print(rank, 'isend')
 #     elif (rank == size - 1):
 #         # tmp = comm.recv(source=0, tag=0)
 #         # pred = modelDiv.predict(tmp)
-#         pred = modelDiv.predict(comm.recv(source=(rank - 1), tag=0))
-#         # print(rank, 'recv')
+#         # data = comm.irecv(source=prevRank, tag=0)
+#         # buf = np.empty(262144 * 2, dtype='float32')
+#         # print(buf.size, buf.shape)
+#         data = comm.recv(source=prevRank, tag=0)
+#         print(rank, 'recv')
+#         # if i == 0:
+#         #     s = comm.recv(source=prevRank, tag=0)
+#         #     data = np.empty(shape=s[0], dtype=s[1])
+#         # comm.Recv(data, source=prevRank, tag=0)
+#         # modelDiv.predict(data)
+#         # while 1:
+#         #     d = data.test()
+#         #     if d[0]:
+#         #         print(rank, 'recv')
+#         #         # pred = modelDiv.predict(d[1])
+#         #         break
 #         # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
 #         # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
 
@@ -283,38 +341,6 @@ t1 = mpi.Wtime()
 #         # # print(str(np.where(pred == pred.max())))
 #         # # print(str(np.where(pred == pred.max())[1][0]))
 #         # fileOut.close()
-for i in range(lenMatrixVec):
-    persent += 1
-    print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
-    print('\r', end='')
-
-    if (rank == 0):
-        # pred = modelDiv.predict(matrixVec[i:i + 1])
-        # comm.send(pred, dest=1, tag=0)
-        # req = comm.isend(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-        req = comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-        # print(rank, 'isend')
-        # if (i == lenMatrixVec - 1):
-        #     req.wait()
-        #     print(rank, 'send')
-    elif (rank != size - 1):
-        pred = modelDiv.predict(comm.recv(source=(rank - 1), tag=0))
-        # print(rank, 'recv')
-        comm.send(pred, dest=(rank + 1), tag=0)
-        # print(rank, 'isend')
-    elif (rank == size - 1):
-        # tmp = comm.recv(source=0, tag=0)
-        # pred = modelDiv.predict(tmp)
-        pred = modelDiv.predict(comm.recv(source=(rank - 1), tag=0))
-        # print(rank, 'recv')
-        # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
-        # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
-
-        # fileOut.write(str(np.where(pred == pred.max())[1][0]))
-        # fileOut.write('\n')
-        # # print(str(np.where(pred == pred.max())))
-        # # print(str(np.where(pred == pred.max())[1][0]))
-        # fileOut.close()
 t2 = mpi.Wtime() - t1
 
 t2 = np.array(t2)
