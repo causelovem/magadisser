@@ -17,8 +17,8 @@ for i in range(0, 10):
         # req.wait()
         # print(rank, req.wait())
     elif rank == 1:
-        req = comm.recv(source=(rank - 1), tag=0)
-        print(rank, req)
+        req = comm.irecv(source=(rank - 1), tag=0)
+        print(rank, req.wait())
         # data = req.wait()
         # while 1:
         #     r = req.test()

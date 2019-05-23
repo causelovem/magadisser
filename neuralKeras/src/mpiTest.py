@@ -253,28 +253,92 @@ nextRank = rank + 1
 
 persent = -1
 print('> Predict on test data...')
+step = 5
+que = []
 t1 = mpi.Wtime()
 # lenMatrixVec = len(matrixVec)
-for i in range(lenMatrixVec):
-    persent += 1
-    print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
-    print('\r', end='')
+# for i in range(lenMatrixVec):
+#     persent += 1
+#     print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
+#     print('\r', end='')
 
+#     if (rank == 0):
+#         req = comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
+#     elif (rank != size - 1):
+#         pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
+#         comm.send(pred, dest=nextRank, tag=0)
+#     elif (rank == size - 1):
+#         pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
+#         # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
+#         # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
+
+#         # fileOut.write(str(np.where(pred == pred.max())[1][0]))
+#         # fileOut.write('\n')
+#         # # print(str(np.where(pred == pred.max())))
+#         # # print(str(np.where(pred == pred.max())[1][0]))
+#         # fileOut.close()
+
+# for i in range(lenMatrixVec):
+#     persent += 1
+#     print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
+#     print('\r', end='')
+
+#     if (rank == 0):
+#         que.append(modelDiv.predict(matrixVec[i:i + 1]))
+#         if (i % step == 0) or (i == lenMatrixVec - 1):
+#             req = comm.send(que, dest=1, tag=0)
+#             que = []
+#     elif (rank != size - 1):
+#         if (i % step == 0) or (i == lenMatrixVec - 1):
+#             data = comm.recv(source=prevRank, tag=0)
+#             for el in data:
+#                 que.append(modelDiv.predict(el))
+#             comm.send(que, dest=nextRank, tag=0)
+#             que = []
+#     elif (rank == size - 1):
+#         if (i % step == 0) or (i == lenMatrixVec - 1):
+#             data = comm.recv(source=prevRank, tag=0)
+#             for el in data:
+#                 pred = modelDiv.predict(el)
+#         # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
+#         # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
+
+#         # fileOut.write(str(np.where(pred == pred.max())[1][0]))
+#         # fileOut.write('\n')
+#         # # print(str(np.where(pred == pred.max())))
+#         # # print(str(np.where(pred == pred.max())[1][0]))
+#         # fileOut.close()
+
+if 1 == 1:
+    processed = 0
     if (rank == 0):
-        req = comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-    elif (rank != size - 1):
-        pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
-        comm.send(pred, dest=nextRank, tag=0)
-    elif (rank == size - 1):
-        pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
-        # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
-        # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
+        for i in range(lenMatrixVec):
+            persent += 1
+            print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
+            print('\r', end='')
 
-        # fileOut.write(str(np.where(pred == pred.max())[1][0]))
-        # fileOut.write('\n')
-        # # print(str(np.where(pred == pred.max())))
-        # # print(str(np.where(pred == pred.max())[1][0]))
-        # fileOut.close()
+            que.append(modelDiv.predict(matrixVec[i:i + 1]))
+            if (i % step == 0) or (i == lenMatrixVec - 1):
+                req = comm.send(que, dest=1, tag=0)
+                que = []
+    elif (rank != size - 1):
+        while 1:
+            data = comm.recv(source=prevRank, tag=0)
+            processed += len(data)
+            for el in data:
+                que.append(modelDiv.predict(el))
+            comm.send(que, dest=nextRank, tag=0)
+            if (processed == lenMatrixVec):
+                break
+            que = []
+    elif (rank == size - 1):
+        while 1:
+            data = comm.recv(source=prevRank, tag=0)
+            processed += len(data)
+            for el in data:
+                pred = modelDiv.predict(el)
+            if (processed == lenMatrixVec):
+                break
 
 # for i in range(lenMatrixVec):
 #     persent += 1
@@ -294,25 +358,20 @@ for i in range(lenMatrixVec):
 #         #     comm.send([data.shape, data.dtype], dest=1, tag=0)
 #         # print(data.size, data.shape)
 #         # req = comm.Isend(data, dest=1, tag=0)
+#         que.append(data)
 #         req = comm.isend(data, dest=1, tag=0)
 #         print(rank, 'isend')
-#         li.append(req)
-#         if (i == 5):
-#             for ll in li:
-#                 ll.wait()
 #         # req.wait()
 #         # if (i == lenMatrixVec - 1):
 #         #     req.wait()
 #         #     print(rank, 'send')
 #     elif (rank != size - 1):
-#         data = comm.recv(source=prevRank, tag=0)
-#         comm.isend(data, dest=nextRank, tag=0)
+#         buf = np.arange(2800000, dtype='f')
+#         data = comm.irecv(buf, source=prevRank, tag=0)
 #         # print(rank, 'recv')
-#         # while 1:
-#         #     d = data.test()
-#         #     if d[0]:
-#         #         comm.isend(modelDiv.predict(d[1]), dest=nextRank, tag=0)
-#         #         break
+#         req = comm.isend(modelDiv.predict(data.wait()), dest=nextRank, tag=0)
+#         req.wait()
+#         # comm.isend(data, dest=nextRank, tag=0)
 #         print(rank, 'isend')
 #     elif (rank == size - 1):
 #         # tmp = comm.recv(source=0, tag=0)
@@ -320,8 +379,10 @@ for i in range(lenMatrixVec):
 #         # data = comm.irecv(source=prevRank, tag=0)
 #         # buf = np.empty(262144 * 2, dtype='float32')
 #         # print(buf.size, buf.shape)
-#         data = comm.recv(source=prevRank, tag=0)
+#         buf = np.arange(2800000, dtype='f')
+#         data = comm.irecv(buf, source=prevRank, tag=0)
 #         print(rank, 'recv')
+#         modelDiv.predict(data.wait())
 #         # if i == 0:
 #         #     s = comm.recv(source=prevRank, tag=0)
 #         #     data = np.empty(shape=s[0], dtype=s[1])
@@ -341,6 +402,7 @@ for i in range(lenMatrixVec):
 #         # # print(str(np.where(pred == pred.max())))
 #         # # print(str(np.where(pred == pred.max())[1][0]))
 #         # fileOut.close()
+
 t2 = mpi.Wtime() - t1
 
 t2 = np.array(t2)
