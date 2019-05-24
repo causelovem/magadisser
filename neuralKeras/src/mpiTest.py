@@ -124,82 +124,122 @@ if 1 == 1:
     img_input = Input(shape=[256, 256, 1])
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(img_input)
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
-    # x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv3')(x)
-    # x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv4')(x)
-    # x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv5')(x)
-    # x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv6')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv3')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv4')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv5')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
 
     # Block 2
     x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
     x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
-    # x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv3')(x)
-    # x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv4')(x)
-    # x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv5')(x)
-    # x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv6')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv3')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv4')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv5')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
 
     # Block 3
     x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv1')(x)
     x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2')(x)
-    # x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
-    # x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
-    # x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv5')(x)
-    # x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv6')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv5')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
 
     # Block 4
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv1')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(x)
-    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
-    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
-    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv5')(x)
-    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv6')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv5')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(x)
 
     # Block 5
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv1')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(x)
-    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
-    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
-    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv5')(x)
-    # x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv6')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv5')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
 
     x = Flatten(name='flatten')(x)
     x = Dense(4096, activation='relu', name='fc1')(x)
-    # x = Dense(4096, activation='relu', name='fc2')(x)
-    # x = Dense(4096, activation='relu', name='fc3')(x)
-    # x = Dense(4096, activation='relu', name='fc4')(x)
+    x = Dense(4096, activation='relu', name='fc2')(x)
+    x = Dense(4096, activation='relu', name='fc3')(x)
+    x = Dense(4096, activation='relu', name='fc4')(x)
     x = Dense(7, activation='softmax', name='predictions')(x)
 
     model = Model(inputs=img_input, outputs=x)
 
 
 modelLen = len(model.layers)
-
-numOfLayers = modelLen // size
 allPos = []
-for i in range(size):
-    allPos.append(numOfLayers)
-    if (i < modelLen % size):
-        allPos[i] += 1
-if (rank < modelLen % size):
-    numOfLayers += 1
 
-startLayer = sum(allPos[0:rank])
-# print(rank, startLayer, numOfLayers, allPos)
+if 1 == 1:
+    numOfLayers = modelLen // size
+    for i in range(size):
+        allPos.append(numOfLayers)
+        if (i < modelLen % size):
+            allPos[i] += 1
+    if (rank < modelLen % size):
+        numOfLayers += 1
 
-for i in range(startLayer, startLayer + numOfLayers):
-    if (i == 0):
-        # inp = Input(shape=(matrixDim, matrixDim, 1))
-        inp = Input([d.value for d in model.layers[i].get_input_at(0).shape[1:]])
-        lay = model.layers[i](inp)
-    elif (i == startLayer):
-        inp = Input(shape=[d.value if d.value is not None else np.prod(model.layers[i - 1].get_input_at(0).shape[1:]).value for d in model.layers[i - 1].get_output_at(0).shape[1:]])
-        lay = model.layers[i](inp)
-    else:
-        lay = model.layers[i](lay)
+    startLayer = sum(allPos[0:rank])
+    # print(rank, startLayer, numOfLayers, allPos)
+
+    for i in range(startLayer, startLayer + numOfLayers):
+        if (i == 0):
+            # inp = Input(shape=(matrixDim, matrixDim, 1))
+            inp = Input([d.value for d in model.layers[i].get_input_at(0).shape[1:]])
+            lay = model.layers[i](inp)
+        elif (i == startLayer):
+            inp = Input(shape=[d.value if d.value is not None else np.prod(model.layers[i - 1].get_input_at(0).shape[1:]).value for d in model.layers[i - 1].get_output_at(0).shape[1:]])
+            lay = model.layers[i](inp)
+        else:
+            lay = model.layers[i](lay)
+
+if 1 == 0:
+    nearCount = model.count_params() // size
+    s = 0
+    cnt = 0
+    allPos = []
+    for i in range(modelLen):
+        s += model.get_layer(index=i).count_params()
+        cnt += 1
+        if (s >= nearCount) or (i == modelLen - 1) or (modelLen - i < size):
+            allPos.append(cnt)
+            s = 0
+            cnt = 0
+    # print(allPos)
+    startLayer = sum(allPos[0:rank])
+    # print(rank, startLayer)
+
+    for i in range(startLayer, sum(allPos[0:rank + 1])):
+        if (i == 0):
+            # inp = Input(shape=(matrixDim, matrixDim, 1))
+            inp = Input([d.value for d in model.layers[i].get_input_at(0).shape[1:]])
+            lay = model.layers[i](inp)
+        elif (i == startLayer):
+            inp = Input(shape=[d.value if d.value is not None else np.prod(model.layers[i - 1].get_input_at(0).shape[1:]).value for d in model.layers[i - 1].get_output_at(0).shape[1:]])
+            lay = model.layers[i](inp)
+        else:
+            lay = model.layers[i](lay)
+
+# for i in range(startLayer, startLayer + numOfLayers):
+# for i in range(startLayer, sum(allPos[0:rank + 1])):
+#     if (i == 0):
+#         # inp = Input(shape=(matrixDim, matrixDim, 1))
+#         inp = Input([d.value for d in model.layers[i].get_input_at(0).shape[1:]])
+#         lay = model.layers[i](inp)
+#     elif (i == startLayer):
+#         inp = Input(shape=[d.value if d.value is not None else np.prod(model.layers[i - 1].get_input_at(0).shape[1:]).value for d in model.layers[i - 1].get_output_at(0).shape[1:]])
+#         lay = model.layers[i](inp)
+#     else:
+#         lay = model.layers[i](lay)
 
 modelDiv = Model(inputs=inp, outputs=lay)
 # modelDiv.summary()
@@ -257,26 +297,27 @@ step = 5
 que = []
 t1 = mpi.Wtime()
 # lenMatrixVec = len(matrixVec)
-# for i in range(lenMatrixVec):
-#     persent += 1
-#     print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
-#     print('\r', end='')
+if 1 == 0:
+    for i in range(lenMatrixVec):
+        persent += 1
+        print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
+        print('\r', end='')
 
-#     if (rank == 0):
-#         req = comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-#     elif (rank != size - 1):
-#         pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
-#         comm.send(pred, dest=nextRank, tag=0)
-#     elif (rank == size - 1):
-#         pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
-#         # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
-#         # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
+        if (rank == 0):
+            req = comm.send(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
+        elif (rank != size - 1):
+            pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
+            comm.send(pred, dest=nextRank, tag=0)
+        elif (rank == size - 1):
+            pred = modelDiv.predict(comm.recv(source=prevRank, tag=0))
+            # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
+            # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
 
-#         # fileOut.write(str(np.where(pred == pred.max())[1][0]))
-#         # fileOut.write('\n')
-#         # # print(str(np.where(pred == pred.max())))
-#         # # print(str(np.where(pred == pred.max())[1][0]))
-#         # fileOut.close()
+            # fileOut.write(str(np.where(pred == pred.max())[1][0]))
+            # fileOut.write('\n')
+            # # print(str(np.where(pred == pred.max())))
+            # # print(str(np.where(pred == pred.max())[1][0]))
+    #         # fileOut.close()
 
 # for i in range(lenMatrixVec):
 #     persent += 1
