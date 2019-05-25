@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # import setuptools
 import os
 # import sys
@@ -13,12 +14,17 @@ from keras.utils import plot_model, normalize, np_utils
 # import matplotlib.pyplot as plt
 # from keras.regularizers import l2
 
+
+from mpi4py import rc
+rc.initialize = False
+
 from mpi4py import MPI as mpi
 import queue as qu
 from time import sleep
 
-np.set_printoptions(threshold=np.nan)
+# np.set_printoptions(threshold=np.nan)
 
+mpi.Init()
 comm = mpi.COMM_WORLD
 size = comm.Get_size()
 rank = comm.Get_rank()
@@ -174,12 +180,47 @@ if 1 == 1:
     x = Dense(7, activation='softmax', name='predictions')(x)
 
     model = Model(inputs=img_input, outputs=x)
+else:
+    model = Sequential()
+    # model.add(Input(shape=[256, 256, 1]))
+    model.add(Conv2D(numFilt, (convSize, convSize), padding='same',
+                     activation='relu', input_shape=(256, 256, 1)))
+    model.add(Conv2D(numFilt, (convSize, convSize), padding='same',
+                     activation='relu'))
+    model.add(MaxPooling2D(pool_size=(4, 4)))
+    model.add(Conv2D(numFilt * 2, (convSize, convSize), padding='same',
+                     activation='relu'))
+    model.add(Conv2D(numFilt * 2, (convSize, convSize), padding='same',
+                     activation='relu'))
+    model.add(MaxPooling2D(pool_size=(4, 4)))
+    model.add(Conv2D(numFilt * 4, (convSize, convSize), padding='same',
+                     activation='relu'))
+    model.add(Conv2D(numFilt * 4, (convSize, convSize), padding='same',
+                     activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Flatten())
+
+    # for i in range(len(model.layers)):
+    #     weig = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/layer" + str((i + 1)) + ".npy")
+    #     bias = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/biase" + str((i + 1)) + ".npy")
+    #     if len(weig) > 0:
+    #         model.get_layer(index=(i + 1)).set_weights([weig, bias])
+
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(200, activation='relu'))
+    model.add(Dense(7, activation='softmax'))
+    # for i in range(len(model.layers)):
+    #     weig = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/layer" + str((i + 1 + 10)) + ".npy")
+    #     bias = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/biase" + str((i + 1 + 10)) + ".npy")
+    #     model.get_layer(index=(i + 1)).set_weights([weig, bias])
 
 
 modelLen = len(model.layers)
 allPos = []
 
-if 1 == 1:
+# divade by layers
+if 1 == 0:
+    nearCount = model.count_params() // size
     numOfLayers = modelLen // size
     for i in range(size):
         allPos.append(numOfLayers)
@@ -201,8 +242,8 @@ if 1 == 1:
             lay = model.layers[i](inp)
         else:
             lay = model.layers[i](lay)
-
-if 1 == 0:
+else:
+# divade by layers' wieghts
     nearCount = model.count_params() // size
     s = 0
     cnt = 0
@@ -210,7 +251,7 @@ if 1 == 0:
     for i in range(modelLen):
         s += model.get_layer(index=i).count_params()
         cnt += 1
-        if (s >= nearCount) or (i == modelLen - 1) or (modelLen - i < size):
+        if (s >= nearCount) or (i == modelLen - 1) or (modelLen - i <= size - len(allPos)):
             allPos.append(cnt)
             s = 0
             cnt = 0
@@ -229,20 +270,9 @@ if 1 == 0:
         else:
             lay = model.layers[i](lay)
 
-# for i in range(startLayer, startLayer + numOfLayers):
-# for i in range(startLayer, sum(allPos[0:rank + 1])):
-#     if (i == 0):
-#         # inp = Input(shape=(matrixDim, matrixDim, 1))
-#         inp = Input([d.value for d in model.layers[i].get_input_at(0).shape[1:]])
-#         lay = model.layers[i](inp)
-#     elif (i == startLayer):
-#         inp = Input(shape=[d.value if d.value is not None else np.prod(model.layers[i - 1].get_input_at(0).shape[1:]).value for d in model.layers[i - 1].get_output_at(0).shape[1:]])
-#         lay = model.layers[i](inp)
-#     else:
-#         lay = model.layers[i](lay)
-
 modelDiv = Model(inputs=inp, outputs=lay)
 # modelDiv.summary()
+print(rank, nearCount, modelDiv.count_params())
 
 comm.Barrier()
 
@@ -254,39 +284,6 @@ comm.Barrier()
 
 que = qu.Queue()
 
-if 0 == 1:
-    if (rank == 0):
-        model.add(Conv2D(numFilt, (convSize, convSize), padding='same',
-                         activation='relu', input_shape=(matrixDim, matrixDim, 1)))
-        model.add(Conv2D(numFilt, (convSize, convSize), padding='same',
-                         activation='relu'))
-        model.add(MaxPooling2D(pool_size=(4, 4)))
-        model.add(Conv2D(numFilt * 2, (convSize, convSize), padding='same',
-                         activation='relu'))
-        model.add(Conv2D(numFilt * 2, (convSize, convSize), padding='same',
-                         activation='relu'))
-        model.add(MaxPooling2D(pool_size=(4, 4)))
-        model.add(Conv2D(numFilt * 4, (convSize, convSize), padding='same',
-                         activation='relu'))
-        model.add(Conv2D(numFilt * 4, (convSize, convSize), padding='same',
-                         activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Flatten())
-
-        for i in range(len(model.layers)):
-            weig = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/layer" + str((i + 1)) + ".npy")
-            bias = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/biase" + str((i + 1)) + ".npy")
-            if len(weig) > 0:
-                model.get_layer(index=(i + 1)).set_weights([weig, bias])
-
-    if (rank == 1):
-        model.add(Dense(200, activation='relu', input_shape=(matrixDim * numFilt,)))
-        model.add(Dense(200, activation='relu'))
-        model.add(Dense(numClass, activation='softmax'))
-        for i in range(len(model.layers)):
-            weig = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/layer" + str((i + 1 + 10)) + ".npy")
-            bias = np.load("/mnt/f/prog/magadisser/neuralKeras/layers/biase" + str((i + 1 + 10)) + ".npy")
-            model.get_layer(index=(i + 1)).set_weights([weig, bias])
 
 prevRank = rank - 1
 nextRank = rank + 1
@@ -296,7 +293,6 @@ print('> Predict on test data...')
 step = 5
 que = []
 t1 = mpi.Wtime()
-# lenMatrixVec = len(matrixVec)
 if 1 == 0:
     for i in range(lenMatrixVec):
         persent += 1
@@ -317,38 +313,7 @@ if 1 == 0:
             # fileOut.write('\n')
             # # print(str(np.where(pred == pred.max())))
             # # print(str(np.where(pred == pred.max())[1][0]))
-    #         # fileOut.close()
-
-# for i in range(lenMatrixVec):
-#     persent += 1
-#     print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
-#     print('\r', end='')
-
-#     if (rank == 0):
-#         que.append(modelDiv.predict(matrixVec[i:i + 1]))
-#         if (i % step == 0) or (i == lenMatrixVec - 1):
-#             req = comm.send(que, dest=1, tag=0)
-#             que = []
-#     elif (rank != size - 1):
-#         if (i % step == 0) or (i == lenMatrixVec - 1):
-#             data = comm.recv(source=prevRank, tag=0)
-#             for el in data:
-#                 que.append(modelDiv.predict(el))
-#             comm.send(que, dest=nextRank, tag=0)
-#             que = []
-#     elif (rank == size - 1):
-#         if (i % step == 0) or (i == lenMatrixVec - 1):
-#             data = comm.recv(source=prevRank, tag=0)
-#             for el in data:
-#                 pred = modelDiv.predict(el)
-#         # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
-#         # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
-
-#         # fileOut.write(str(np.where(pred == pred.max())[1][0]))
-#         # fileOut.write('\n')
-#         # # print(str(np.where(pred == pred.max())))
-#         # # print(str(np.where(pred == pred.max())[1][0]))
-#         # fileOut.close()
+            # # fileOut.close()
 
 if 1 == 1:
     processed = 0
@@ -380,70 +345,6 @@ if 1 == 1:
                 pred = modelDiv.predict(el)
             if (processed == lenMatrixVec):
                 break
-
-# for i in range(lenMatrixVec):
-#     persent += 1
-#     print(str(round(persent * 100 / lenMatrixVec, 1)) + '%', end='')
-#     print('\r', end='')
-
-#     if (rank == 0):
-#         # pred = modelDiv.predict(matrixVec[i:i + 1])
-#         # comm.send(pred, dest=1, tag=0)
-#         # req = comm.isend(modelDiv.predict(matrixVec[i:i + 1]), dest=1, tag=0)
-#         data = modelDiv.predict(matrixVec[i:i + 1])
-#         # data = np.zeros(shape=(1, 32, 32, 256), dtype='float32')
-#         # data = np.zeros(shape=262144, dtype='float32')
-#         # data = np.zeros(shape=(1, 32, 32, 256), dtype='i')
-#         # li.append(data)
-#         # if i == 0:
-#         #     comm.send([data.shape, data.dtype], dest=1, tag=0)
-#         # print(data.size, data.shape)
-#         # req = comm.Isend(data, dest=1, tag=0)
-#         que.append(data)
-#         req = comm.isend(data, dest=1, tag=0)
-#         print(rank, 'isend')
-#         # req.wait()
-#         # if (i == lenMatrixVec - 1):
-#         #     req.wait()
-#         #     print(rank, 'send')
-#     elif (rank != size - 1):
-#         buf = np.arange(2800000, dtype='f')
-#         data = comm.irecv(buf, source=prevRank, tag=0)
-#         # print(rank, 'recv')
-#         req = comm.isend(modelDiv.predict(data.wait()), dest=nextRank, tag=0)
-#         req.wait()
-#         # comm.isend(data, dest=nextRank, tag=0)
-#         print(rank, 'isend')
-#     elif (rank == size - 1):
-#         # tmp = comm.recv(source=0, tag=0)
-#         # pred = modelDiv.predict(tmp)
-#         # data = comm.irecv(source=prevRank, tag=0)
-#         # buf = np.empty(262144 * 2, dtype='float32')
-#         # print(buf.size, buf.shape)
-#         buf = np.arange(2800000, dtype='f')
-#         data = comm.irecv(buf, source=prevRank, tag=0)
-#         print(rank, 'recv')
-#         modelDiv.predict(data.wait())
-#         # if i == 0:
-#         #     s = comm.recv(source=prevRank, tag=0)
-#         #     data = np.empty(shape=s[0], dtype=s[1])
-#         # comm.Recv(data, source=prevRank, tag=0)
-#         # modelDiv.predict(data)
-#         # while 1:
-#         #     d = data.test()
-#         #     if d[0]:
-#         #         print(rank, 'recv')
-#         #         # pred = modelDiv.predict(d[1])
-#         #         break
-#         # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
-#         # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
-
-#         # fileOut.write(str(np.where(pred == pred.max())[1][0]))
-#         # fileOut.write('\n')
-#         # # print(str(np.where(pred == pred.max())))
-#         # # print(str(np.where(pred == pred.max())[1][0]))
-#         # fileOut.close()
-
 t2 = mpi.Wtime() - t1
 
 t2 = np.array(t2)
@@ -454,6 +355,10 @@ if (rank == 0):
 
 print(rank, 'END')
 comm.Barrier()
+
+mpi.Finalize()
+
+
 
 # if (rank == 1):
 #     score = model.evaluate(matrixVec, mappingVec, batch_size=50)

@@ -59,49 +59,57 @@ numOfSet = int(matrixVec.shape[0])
 
 print(matrixVec.shape)
 
-mappingList = []
-mappingFiles = os.listdir("./pred/test")
-mappingFiles.sort(key=lambda x: int(x[7:]))
+# mappingList = []
+# mappingFiles = os.listdir("./pred/test")
+# mappingFiles.sort(key=lambda x: int(x[7:]))
 
-persent = -1
-print('> Readind mapping data...')
-for file in mappingFiles:
-    persent += 1
-    print(str(round(persent * 100 / len(mappingFiles), 1)) + '%', end='')
-    print('\r', end='')
+# persent = -1
+# print('> Readind mapping data...')
+# for file in mappingFiles:
+#     persent += 1
+#     print(str(round(persent * 100 / len(mappingFiles), 1)) + '%', end='')
+#     print('\r', end='')
 
-    fileIn = open("./pred/test/" + file, "r")
+#     fileIn = open("./pred/test/" + file, "r")
 
-    mapping = fileIn.readline()
-    mappingList.append(int(mapping[:-1]))
+#     mapping = fileIn.readline()
+#     mappingList.append(int(mapping[:-1]))
 
-    fileIn.close()
+#     fileIn.close()
 
-mappingVec = np.array(mappingList)
+# mappingVec = np.array(mappingList)
 # numClass = np.max(mappingVec) + 1
 numClass = 7
-mappingVec = np_utils.to_categorical(mappingVec, numClass)
+# mappingVec = np_utils.to_categorical(mappingVec, numClass)
 # mappingVec = mappingVec.reshape(numOfSet, matrixDim * 4)
 
 # sys.exit(0)
 
 print('> Preparing for prediction...')
 lenMapStr = 4
-model = Sequential()
+# model = Sequential()
 # model = load_model('./nets/net1.h5')
 # model = load_model('/mnt/f/prog/magadisser/neuralKeras/nets/goodNet3.h5')
-model = load_model('./nets/goodNet3.h5')
+# model = load_model('./nets/goodNet3.h5')
 # plot_model(model, to_file='model.png')
 
 if 1 == 1:
     img_input = Input(shape=[256, 256, 1])
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv1')(img_input)
     x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv2')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv3')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv4')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv5')(x)
+    x = Conv2D(64, (3, 3), activation='relu', padding='same', name='block1_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block1_pool')(x)
 
     # Block 2
     x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv1')(x)
     x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv2')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv3')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv4')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv5')(x)
+    x = Conv2D(128, (3, 3), activation='relu', padding='same', name='block2_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block2_pool')(x)
 
     # Block 3
@@ -109,6 +117,8 @@ if 1 == 1:
     x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv2')(x)
     x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv3')(x)
     x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv4')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv5')(x)
+    x = Conv2D(256, (3, 3), activation='relu', padding='same', name='block3_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block3_pool')(x)
 
     # Block 4
@@ -116,6 +126,8 @@ if 1 == 1:
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv2')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv3')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv4')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv5')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block4_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block4_pool')(x)
 
     # Block 5
@@ -123,13 +135,16 @@ if 1 == 1:
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv2')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv3')(x)
     x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv4')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv5')(x)
+    x = Conv2D(512, (3, 3), activation='relu', padding='same', name='block5_conv6')(x)
     x = MaxPooling2D((2, 2), strides=(2, 2), name='block5_pool')(x)
 
     x = Flatten(name='flatten')(x)
     x = Dense(4096, activation='relu', name='fc1')(x)
     x = Dense(4096, activation='relu', name='fc2')(x)
+    x = Dense(4096, activation='relu', name='fc3')(x)
+    x = Dense(4096, activation='relu', name='fc4')(x)
     x = Dense(7, activation='softmax', name='predictions')(x)
-
     model = Model(inputs=img_input, outputs=x)
 
 persent = -1
@@ -143,14 +158,14 @@ for i in range(len(matrixVec)):
     pred = model.predict(matrixVec[i:i + 1])
     # print("./pred/prediction/mapping" + str(i + 1) + "Pred")
     # print(pred)
-    fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
+    # fileOut = open("./pred/prediction/mapping" + str(i + 1) + "Pred", "w")
 
-    fileOut.write(str(np.where(pred == pred.max())[1][0]))
-    fileOut.write('\n')
+    # fileOut.write(str(np.where(pred == pred.max())[1][0]))
+    # fileOut.write('\n')
     # print(str(np.where(pred == pred.max())))
     # print(str(np.where(pred == pred.max())[1][0]))
 
-    fileOut.close()
+    # fileOut.close()
 t2 = time.time() - t1
 print('Time =', t2)
 # score = model.evaluate(matrixVec, mappingVec, batch_size=50)

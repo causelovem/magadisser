@@ -1,6 +1,11 @@
+#!/usr/bin/python3
+from mpi4py import rc
+rc.initialize = False
+
 from mpi4py import MPI as mpi
 from time import sleep
 
+mpi.Init()
 comm = mpi.COMM_WORLD
 rank = comm.Get_rank()
 
@@ -13,7 +18,7 @@ for i in range(0, 10):
         print(data)
         # sleep(1)
         req = comm.isend(data, dest=(rank + 1), tag=0)
-        sleep(2)
+        # sleep(2)
         # req.wait()
         # print(rank, req.wait())
     elif rank == 1:
@@ -29,3 +34,4 @@ for i in range(0, 10):
 
 print(rank, 'OK')
 comm.Barrier()
+mpi.Finalize()

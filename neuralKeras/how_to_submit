@@ -1,0 +1,55 @@
+
+bsub -o output -W 00:20 -gpu "num=2:mode=exclusive_process:mps=yes" -n 2 -R "affinity[core(20,exclusive=(socket,alljobs))]" "mpiexec -n 2 ./src/mpiTest.py"
+
+bsub -o output -W 00:20 -gpu "num=2:mode=exclusive_process:mps=yes" -n 2 "mpiexec -n 2 ./src/mpiTest.py"
+
+bsub -o output -W 00:20 -n 2 -R "affinity[core(20,exclusive=(socket,alljobs))]" "mpiexec -n 2 ./src/mpiTest.py"
+bsub -o output -W 00:20 -n 2 -R "affinity[core(20,exclusive=(socket,alljobs))]" "mpiexec -n 2 test.py"
+
+bsub -o output -n 2 "mpiexec -n 2 test.py"
+bsub -o output -n 4 "mpiexec -n 4 ./src/mpiTest.py"
+
+bsub -o output -W 00:20 -n 2 -R "span[hosts=1] affinity[core(1):distribute=pack]" "mpiexec -n 2 ./src/mpiTest.py"
+
+
+bsub -o output -n 4 -m "polus-c1-ib.bmc.hpc.cs.msu.ru polus-c2-ib.bmc.hpc.cs.msu.ru polus-c3-ib.bmc.hpc.cs.msu.ru polus-c4-ib.bmc.hpc.cs.msu.ru" "mpiexec -n 4 ./src/mpiTest.py" 
+
+bsub -o output -n 4 -m "polus-c1-ib polus-c2-ib polus-c3-ib polus-c4-ib" "mpiexec -n 4 ./src/mpiTest.py" 
+
+by layers
+bsub -o output_2 -n 2 -m "polus-c1-ib" "mpiexec -n 2 ./src/mpiTest.py"
+bsub -o output_4 -n 4 -m "polus-c2-ib" "mpiexec -n 4 ./src/mpiTest.py"
+bsub -o output_8 -n 8 -m "polus-c3-ib" "mpiexec -n 8 ./src/mpiTest.py"
+bsub -o output_16 -n 16 -m "polus-c4-ib" "mpiexec -n 16 ./src/mpiTest.py"
+
+bsub -o output_20 -n 20 -m "polus-c1-ib" "mpiexec -n 20 ./src/mpiTest.py"
+
+bsub -o output_30 -n 30 "mpiexec -n 30 ./src/mpiTest.py"
+bsub -o output_40 -n 40 "mpiexec -n 40 ./src/mpiTest.py"
+
+bsub -o output_64 -n 64 "mpiexec -n 64 ./src/mpiTest.py"
+bsub -o output_80 -n 80 "mpiexec -n 80 ./src/mpiTest.py"
+bsub -o output_128 -n 128 "mpiexec -n 128 ./src/mpiTest.py"
+bsub -o output_256 -n 256 "mpiexec -n 256 ./src/mpiTest.py"
+
+by layers weights
+bsub -o output2_2 -n 2 -m "polus-c1-ib" "mpiexec -n 2 ./src/mpiTest2.py"
+bsub -o output2_4 -n 4 -m "polus-c2-ib" "mpiexec -n 4 ./src/mpiTest2.py"
+bsub -o output2_8 -n 8 -m "polus-c3-ib" "mpiexec -n 8 ./src/mpiTest2.py"
+bsub -o output2_16 -n 16 -m "polus-c4-ib" "mpiexec -n 16 ./src/mpiTest2.py"
+
+bsub -o output_1 -n 1 "./src/predTest5.py"
+
+bsub -o output_1g -gpu "num=1:mode=exclusive_process" -n 1 "./src/predTest5.py"
+
+bsub -o output_2g2 -n 2 -gpu "num=2:mode=exclusive_process" "./src/predTest5.py"
+
+172.29.95.12 polus-c1-ib.bmc.hpc.cs.msu.ru polus-c1-ib
+172.29.95.13 polus-c2-ib.bmc.hpc.cs.msu.ru polus-c2-ib
+172.29.95.14 polus-c3-ib.bmc.hpc.cs.msu.ru polus-c3-ib
+172.29.95.15 polus-c4-ib.bmc.hpc.cs.msu.ru polus-c4-ib
+
+kozlov@172.29.95.12
+kozlov@172.29.95.13
+kozlov@172.29.95.14
+kozlov@172.29.95.15
