@@ -23,14 +23,20 @@ bsub -o output_8 -n 8 -m "polus-c3-ib" "mpiexec -n 8 ./src/mpiTest.py"
 bsub -o output_16 -n 16 -m "polus-c4-ib" "mpiexec -n 16 ./src/mpiTest.py"
 
 bsub -o output_20 -n 20 -m "polus-c1-ib" "mpiexec -n 20 ./src/mpiTest.py"
-
 bsub -o output_30 -n 30 "mpiexec -n 30 ./src/mpiTest.py"
 bsub -o output_40 -n 40 "mpiexec -n 40 ./src/mpiTest.py"
 
-bsub -o output_64 -n 64 "mpiexec -n 64 ./src/mpiTest.py"
-bsub -o output_80 -n 80 "mpiexec -n 80 ./src/mpiTest.py"
-bsub -o output_128 -n 128 "mpiexec -n 128 ./src/mpiTest.py"
-bsub -o output_256 -n 256 "mpiexec -n 256 ./src/mpiTest.py"
+
+bsub -o output_22 -n 2 -m "polus-c1-ib" "mpiexec -n 2 ./src/mpiTest.py"
+bsub -o output_44 -n 4 -m "polus-c2-ib" "mpiexec -n 4 ./src/mpiTest.py"
+bsub -o output_88 -n 8 -m "polus-c3-ib" "mpiexec -n 8 ./src/mpiTest.py"
+bsub -o output_1616 -n 16 -m "polus-c4-ib" "mpiexec -n 16 ./src/mpiTest.py"
+
+bsub -o output_2020 -n 20 -m "polus-c1-ib" "mpiexec -n 20 ./src/mpiTest.py"
+bsub -o output_3030 -n 30 "mpiexec -n 30 ./src/mpiTest.py"
+bsub -o output_4040 -n 40 "mpiexec -n 40 ./src/mpiTest.py"
+
+
 
 by layers weights
 bsub -o output2_2 -n 2 -m "polus-c1-ib" "mpiexec -n 2 ./src/mpiTest2.py"
