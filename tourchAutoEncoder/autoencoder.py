@@ -25,8 +25,9 @@ class Interpolate(nn.Module):
         self.mode = mode
 
     def forward(self, x):
-        x = interpolate(x, mode=self.mode, scale_factor=self.scale_factor)
-        return x
+        # x = interpolate(x, mode=self.mode, scale_factor=self.scale_factor)
+        # return x
+        return interpolate(x, mode=self.mode, scale_factor=self.scale_factor)
 
 
 class AutoEncoder(nn.Module):
@@ -36,11 +37,11 @@ class AutoEncoder(nn.Module):
         self.encoder = nn.Sequential(
             nn.Conv2d(1, 32, kernel_size=3, padding=1),
             nn.ReLU(True),
-            nn.MaxPool2d(2),
+            nn.MaxPool2d(2)
 
-            nn.Conv2d(32, 32, kernel_size=3, padding=1),
-            nn.ReLU(True),
-            nn.MaxPool2d(2),
+            # nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            # nn.ReLU(True),
+            # nn.MaxPool2d(2),
 
             # nn.Conv2d(32, 32, kernel_size=3, padding=1),
             # nn.ReLU(True),
@@ -70,10 +71,10 @@ class AutoEncoder(nn.Module):
 
             Interpolate(mode='bilinear', scale_factor=2),
             nn.ConvTranspose2d(32, 32, kernel_size=3),
-            nn.ReLU(True),
+            nn.ReLU(True)
 
-            Interpolate(mode='bilinear', scale_factor=2),
-            nn.ConvTranspose2d(32, 1, kernel_size=3)
+            # Interpolate(mode='bilinear', scale_factor=2),
+            # nn.ConvTranspose2d(32, 1, kernel_size=3)
             # nn.ReLU(True),
 
             # nn.Sigmoid()
@@ -81,9 +82,9 @@ class AutoEncoder(nn.Module):
 
     def forward(self, x):
         x = self.encoder(x)
-        print(x.shape)
+        # print(x.shape)
         x = self.decoder(x)
-        print(x.shape)
+        # print(x.shape)
         return x
 
 
@@ -98,16 +99,25 @@ class readData(torch.utils.data.Dataset):
         return self.length
 
     def __getitem__(self, index):
+        print(os.path.join(self.fileDir, self.files[index]))
         array = strucio.load_structure(os.path.join(self.fileDir, self.files[index]))
         if type(array) == biotite.structure.AtomArrayStack:
             array = array[0]
         # print(os.path.join(self.fileDir, self.files[index]))
         # print(type(array))
         cell_list = struc.CellList(array, cell_size=self.threshold)
-        adjacency_matrix = cell_list.create_adjacency_matrix(self.threshold).astype(int)
+        adj_matrix = cell_list.create_adjacency_matrix(self.threshold).astype(int)
 
-        # return torch.tensor(adjacency_matrix.astype('float'))
-        return adjacency_matrix.astype('double')
+        shape = adj_matrix.shape
+
+        if shape[0] % 2 != 0:
+            print(shape)
+            adj_matrix = np.append(adj_matrix, np.zeros((1, shape[0]), dtype=float), axis=0)
+            adj_matrix = np.append(adj_matrix, np.zeros((shape[0] + 1, 1), dtype=float), axis=1)
+            print(adj_matrix.shape)
+
+        # return torch.tensor(adj_matrix.astype('float'))
+        return adj_matrix.astype('double')
 
 
 set_seed(23)
@@ -117,7 +127,7 @@ dataList = os.listdir(fileDir)
 validatePart = 0.3
 batchSize = 1
 epochsNum = 5
-numWorkers = 4
+numWorkers = 1
 
 validateLength = int(len(dataList) * validatePart)
 dataSizes = [len(dataList) - validateLength, validateLength]
@@ -147,9 +157,12 @@ for epoch in range(epochsNum):
     model.train()
     for data in trainLoader:
         print(data.shape)
+
         data = torch.stack((data,)).to(device)
         preds = model(data)
+
         print(preds.shape)
+
         loss = lossType(preds, data)
         optimizer.zero_grad()
         loss.backward()
