@@ -82,9 +82,9 @@ class AutoEncoder(nn.Module):
 
     def forward(self, x):
         x = self.encoder(x)
-        # print(x.shape)
+        print(x.shape)
         x = self.decoder(x)
-        # print(x.shape)
+        print(x.shape)
         return x
 
 
@@ -105,7 +105,11 @@ class readData(torch.utils.data.Dataset):
             array = array[0]
         # print(os.path.join(self.fileDir, self.files[index]))
         # print(type(array))
-        cell_list = struc.CellList(array, cell_size=self.threshold)
+
+        ca = array[array.atom_name == "CA"]
+        cell_list = struc.CellList(ca, cell_size=self.threshold)
+
+        # cell_list = struc.CellList(array, cell_size=self.threshold)
         adj_matrix = cell_list.create_adjacency_matrix(self.threshold).astype(int)
 
         shape = adj_matrix.shape
