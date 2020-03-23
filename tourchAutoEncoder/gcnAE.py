@@ -1,7 +1,6 @@
 import numpy as np
 import torch
 import torch.nn as nn
-# from torch.nn.functional import interpolate
 import torch.nn.functional as f
 import random
 import os
@@ -203,7 +202,6 @@ class AutoEncoder(nn.Module):
         return x
 
 
-# class readData(torch.utils.data.Dataset):
 class readData(torch_geometric.data.Dataset):
     def __init__(self, fileDir, files):
         self.fileDir = fileDir
@@ -215,86 +213,89 @@ class readData(torch_geometric.data.Dataset):
         return self.length
 
     def __getitem__(self, index):
-        print(os.path.join(self.fileDir, self.files[index]))
-        array = strucio.load_structure(os.path.join(self.fileDir, self.files[index]))
-        if type(array) == biotite.structure.AtomArrayStack:
-            array = array[0]
-        # print(os.path.join(self.fileDir, self.files[index]))
-        # print(type(array))
+        try:
+            # print(os.path.join(self.fileDir, self.files[index]))
+            array = strucio.load_structure(os.path.join(self.fileDir, self.files[index]))
+            if type(array) == biotite.structure.AtomArrayStack:
+                array = array[0]
+            # print(os.path.join(self.fileDir, self.files[index]))
+            # print(type(array))
 
-        # ca = array[array.atom_name == "CA"]
-        # cell_list = struc.CellList(ca, cell_size=self.threshold)
+            # ca = array[array.atom_name == "CA"]
+            # cell_list = struc.CellList(ca, cell_size=self.threshold)
 
-        cell_list = struc.CellList(array, cell_size=self.threshold)
-        # adj_matrix = cell_list.create_adjacency_matrix(self.threshold).astype(int)
-        adj_matrix = cell_list.create_adjacency_matrix(self.threshold)
+            cell_list = struc.CellList(array, cell_size=self.threshold)
+            # adj_matrix = cell_list.create_adjacency_matrix(self.threshold).astype(int)
+            adj_matrix = cell_list.create_adjacency_matrix(self.threshold)
 
-        # (adj_matrix[adj_matrix == True].shape[0] - 5385) / 2
-        edge_index = [[], []]
+            # (adj_matrix[adj_matrix == True].shape[0] - 5385) / 2
+            edge_index = [[], []]
 
-        # arrayShape = array.shape[0]
-        # for i in range(arrayShape - 1):
-        #     for j in range(i + 1, arrayShape):
-        #         if struc.distance(array[i], array[j]) <= self.threshold:
-        #             edge_index[0].append(i)
-        #             edge_index[1].append(j)
+            # arrayShape = array.shape[0]
+            # for i in range(arrayShape - 1):
+            #     for j in range(i + 1, arrayShape):
+            #         if struc.distance(array[i], array[j]) <= self.threshold:
+            #             edge_index[0].append(i)
+            #             edge_index[1].append(j)
 
-        nodeFeatures = []
-        arrayShape = array.shape[0]
-        # shape = adj_matrix.shape
-        for i in range(arrayShape - 1):
-            for j in range(i + 1, arrayShape):
-                if adj_matrix[i][j]:
-                    edge_index[0].append(i)
-                    edge_index[1].append(j)
+            nodeFeatures = []
+            arrayShape = array.shape[0]
+            # shape = adj_matrix.shape
+            for i in range(arrayShape - 1):
+                for j in range(i + 1, arrayShape):
+                    if adj_matrix[i][j]:
+                        edge_index[0].append(i)
+                        edge_index[1].append(j)
 
+                nodeFeatures.append(
+                    list(array.coord[i]) +
+                    # [atomsDict[array.atom_name[i]]] +
+                    [atomsDict.get(array.atom_name[arrayShape - 1], atomsDict['Unknown'])] +
+                    # [elementsDict[array.element[i]]] +
+                    [elementsDict.get(array.element[arrayShape - 1], elementsDict['Unknown'])] +
+                    [array.res_id[i]] +
+                    # [residualesDict[array.res_name[i]]] +
+                    [residualesDict.get(array.res_name[arrayShape - 1], residualesDict['Unknown'])] +
+                    [float(array.hetero[i])]
+                )
             nodeFeatures.append(
-                list(array.coord[i]) +
-                # [atomsDict[array.atom_name[i]]] +
+                list(array.coord[arrayShape - 1]) +
+                # [atomsDict[array.atom_name[arrayShape - 1]]] +
                 [atomsDict.get(array.atom_name[arrayShape - 1], atomsDict['Unknown'])] +
-                # [elementsDict[array.element[i]]] +
+                # [elementsDict[array.element[arrayShape - 1]]] +
                 [elementsDict.get(array.element[arrayShape - 1], elementsDict['Unknown'])] +
-                [array.res_id[i]] +
-                # [residualesDict[array.res_name[i]]] +
+                [array.res_id[arrayShape - 1]] +
+                # [residualesDict[array.res_name[arrayShape - 1]]] +
                 [residualesDict.get(array.res_name[arrayShape - 1], residualesDict['Unknown'])] +
-                [float(array.hetero[i])]
+                [float(array.hetero[arrayShape - 1])]
             )
-        nodeFeatures.append(
-            list(array.coord[arrayShape - 1]) +
-            # [atomsDict[array.atom_name[arrayShape - 1]]] +
-            [atomsDict.get(array.atom_name[arrayShape - 1], atomsDict['Unknown'])] +
-            # [elementsDict[array.element[arrayShape - 1]]] +
-            [elementsDict.get(array.element[arrayShape - 1], elementsDict['Unknown'])] +
-            [array.res_id[arrayShape - 1]] +
-            # [residualesDict[array.res_name[arrayShape - 1]]] +
-            [residualesDict.get(array.res_name[arrayShape - 1], residualesDict['Unknown'])] +
-            [float(array.hetero[arrayShape - 1])]
-        )
 
-        # for i in range(arrayShape):
-        #     nodeFeatures.append(
-        #         list(array.coord[i]) +
-        #         [atomsDict[array.atom_name[i]]] +
-        #         [elementsDict[array.element[i]]] +
-        #         [array.res_id[i]] +
-        #         [residualesDict[array.res_name[i]]] +
-        #         [float(array.hetero[i])]
-        #     )
+            # for i in range(arrayShape):
+            #     nodeFeatures.append(
+            #         list(array.coord[i]) +
+            #         [atomsDict[array.atom_name[i]]] +
+            #         [elementsDict[array.element[i]]] +
+            #         [array.res_id[i]] +
+            #         [residualesDict[array.res_name[i]]] +
+            #         [float(array.hetero[i])]
+            #     )
 
-        nodeFeaturesT = torch.tensor(nodeFeatures, dtype=torch.float)
-        edge_indexT = torch.tensor(edge_index, dtype=torch.long)
-        data = Data(x=nodeFeaturesT, edge_index=edge_indexT)
+            nodeFeaturesT = torch.tensor(nodeFeatures, dtype=torch.float)
+            edge_indexT = torch.tensor(edge_index, dtype=torch.long)
+            data = Data(x=nodeFeaturesT, edge_index=edge_indexT)
 
-        return data
+            return data
+        except biotite.InvalidFileError:
+            print('!!!!!!!!!!!' + os.path.join(self.fileDir, self.files[index]))
 
 
 set_seed(23)
 
 fileDir = '/mnt/ssd1/prog/pdbFiles'
 dataList = os.listdir(fileDir)
-dataList = dataList[:20]
+dataList = dataList[:1000]
 validatePart = 0.3
-batchSize = 10
+batchSize = 50
 epochsNum = 5
 numWorkers = 12
 
@@ -308,10 +309,6 @@ dataValidate = readData(fileDir, dataValidateRaw)
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = 'cpu'
 # kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}
-# trainLoader = torch.utils.data.DataLoader(dataTrain, batch_size=batchSize,
-#                                           num_workers=numWorkers, shuffle=True)
-# validateLoader = torch.utils.data.DataLoader(dataValidate, batch_size=batchSize,
-#                                              num_workers=numWorkers, shuffle=True)
 
 trainLoader = torch_geometric.data.DataLoader(dataTrain, batch_size=batchSize,
                                               num_workers=numWorkers, shuffle=True)
@@ -331,15 +328,12 @@ for epoch in range(epochsNum):
 
     model.train()
     for data in trainLoader:
-        # print(data.shape)
+        # print(data)
 
-        # data = torch.stack((data,)).to(device)
         data = data.to(device)
-        preds = model(data)
+        preds = model(data).to(device)
 
-        # print(preds.shape)
-
-        loss = lossType(preds, data)
+        loss = lossType(preds, data.x)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
@@ -347,8 +341,8 @@ for epoch in range(epochsNum):
 
     model.eval()
     for data in validateLoader:
-        # data = torch.stack((data,)).to(device)
         data = data.to(device)
-        preds = model(data)
-        loss = lossType(preds, data)
+        preds = model(data).to(device)
+
+        loss = lossType(preds, data.x)
     print('Validation Loss: {:.4f}'.format(float(loss)), flush=True)
