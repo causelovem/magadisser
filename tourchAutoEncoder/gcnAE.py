@@ -7,6 +7,7 @@ import os
 import biotite
 import biotite.structure as struc
 import biotite.structure.io as strucio
+# import biotite.application.dssp as dssp
 import torch_geometric
 from torch_geometric.data import Data
 from torch_geometric.nn import GCNConv
@@ -56,7 +57,7 @@ elements = [
     'Pt',
     'Hg',
     'Pb',
-    'Unknown'
+    'Null'
 ]
 
 elementsDict = dict([[elements[i], float(i)] for i in range(len(elements))])
@@ -87,7 +88,7 @@ residuales = [
     'TRP',
     'TYR',
     'VAL',
-    'Unknown'
+    'Null'
 ]
 
 residualesDict = dict([[residuales[i], float(i)] for i in range(len(residuales))])
@@ -152,10 +153,19 @@ atoms = [
     'C2',
     'N3',
     'C4',
-    'Unknown'
+    'Null'
 ]
 
 atomsDict = dict([[atoms[i], float(i)] for i in range(len(atoms))])
+
+ssesType = [
+    'a',
+    'b',
+    'c',
+    'Null'
+]
+
+ssesTypeDict = dict([[ssesType[i], float(i)] for i in range(len(ssesType))])
 
 
 def set_seed(seed):
@@ -171,11 +181,11 @@ class AutoEncoder(nn.Module):
     def __init__(self):
         super(AutoEncoder, self).__init__()
 
-        self.conv1 = GCNConv(8, 16)
+        self.conv1 = GCNConv(11, 16)
         self.conv2 = GCNConv(16, 32)
 
         self.unconv1 = GCNConv(32, 16)
-        self.unconv2 = GCNConv(16, 8)
+        self.unconv2 = GCNConv(16, 11)
 
         # self.encoder = nn.Sequential(
         #     GCNConv(8, 16),
@@ -215,74 +225,81 @@ class readData(torch_geometric.data.Dataset):
     def __getitem__(self, index):
         try:
             # print(os.path.join(self.fileDir, self.files[index]))
-            array = strucio.load_structure(os.path.join(self.fileDir, self.files[index]))
-            if type(array) == biotite.structure.AtomArrayStack:
-                array = array[0]
-            # print(os.path.join(self.fileDir, self.files[index]))
-            # print(type(array))
+            array = strucio.load_structure(os.path.join(self.fileDir, self.files[index]),
+                                           # extra_fields=['atom_id', 'b_factor', 'occupancy', 'charge'],
+                                           extra_fields=['b_factor', 'occupancy'],
+                                           model=1)
+            # if type(array) == biotite.structure.AtomArrayStack:
+            #     array = array[0]
 
             # ca = array[array.atom_name == "CA"]
             # cell_list = struc.CellList(ca, cell_size=self.threshold)
 
+            chain_id = []
+            for chain in array.chain_id:
+                if chain not in chain_id:
+                    chain_id.append(chain)
+
+            sseDict = dict([(chain, struc.annotate_sse(array, chain_id=chain)) for chain in chain_id])
+
+            sseMaskDict = {}
+            for key, value in sseDict.items():
+                mask = array[(array.chain_id == key) & (array.atom_name == 'CA')].res_id
+                tmp = mask.shape[0] - value.shape[0]
+                if tmp > 0:
+                    sseDict[key] = np.append(value, ['Null'] * tmp)
+
+                sseMaskDict[key] = {}
+                for maskId, sseId in zip(mask, sseDict[key]):
+                    sseMaskDict[key][maskId] = sseId
+
             cell_list = struc.CellList(array, cell_size=self.threshold)
-            # adj_matrix = cell_list.create_adjacency_matrix(self.threshold).astype(int)
             adj_matrix = cell_list.create_adjacency_matrix(self.threshold)
 
             # (adj_matrix[adj_matrix == True].shape[0] - 5385) / 2
             edge_index = [[], []]
 
-            # arrayShape = array.shape[0]
-            # for i in range(arrayShape - 1):
-            #     for j in range(i + 1, arrayShape):
-            #         if struc.distance(array[i], array[j]) <= self.threshold:
-            #             edge_index[0].append(i)
-            #             edge_index[1].append(j)
-
             nodeFeatures = []
-            arrayShape = array.shape[0]
-            # shape = adj_matrix.shape
-            for i in range(arrayShape - 1):
-                for j in range(i + 1, arrayShape):
+            arrayShp = array.shape[0]
+            for i in range(arrayShp - 1):
+                for j in range(i + 1, arrayShp):
                     if adj_matrix[i][j]:
                         edge_index[0].append(i)
                         edge_index[1].append(j)
 
                 nodeFeatures.append(
                     list(array.coord[i]) +
-                    # [atomsDict[array.atom_name[i]]] +
-                    [atomsDict.get(array.atom_name[arrayShape - 1], atomsDict['Unknown'])] +
-                    # [elementsDict[array.element[i]]] +
-                    [elementsDict.get(array.element[arrayShape - 1], elementsDict['Unknown'])] +
+                    [atomsDict.get(array.atom_name[i], atomsDict['Null'])] +
+                    [elementsDict.get(array.element[i], elementsDict['Null'])] +
                     [array.res_id[i]] +
-                    # [residualesDict[array.res_name[i]]] +
-                    [residualesDict.get(array.res_name[arrayShape - 1], residualesDict['Unknown'])] +
-                    [float(array.hetero[i])]
+                    [residualesDict.get(array.res_name[i], residualesDict['Null'])] +
+                    [float(array.hetero[i])] +
+                    [array.occupancy[i]] +
+                    [array.b_factor[i]] +
+                    [ssesTypeDict.get(sseMaskDict[array.chain_id[i]].get(array.res_id[i],
+                                                                         'Null'),
+                                      ssesTypeDict['Null'])]
                 )
             nodeFeatures.append(
-                list(array.coord[arrayShape - 1]) +
-                # [atomsDict[array.atom_name[arrayShape - 1]]] +
-                [atomsDict.get(array.atom_name[arrayShape - 1], atomsDict['Unknown'])] +
-                # [elementsDict[array.element[arrayShape - 1]]] +
-                [elementsDict.get(array.element[arrayShape - 1], elementsDict['Unknown'])] +
-                [array.res_id[arrayShape - 1]] +
-                # [residualesDict[array.res_name[arrayShape - 1]]] +
-                [residualesDict.get(array.res_name[arrayShape - 1], residualesDict['Unknown'])] +
-                [float(array.hetero[arrayShape - 1])]
+                list(array.coord[arrayShp - 1]) +
+                [atomsDict.get(array.atom_name[arrayShp - 1], atomsDict['Null'])] +
+                [elementsDict.get(array.element[arrayShp - 1], elementsDict['Null'])] +
+                [array.res_id[arrayShp - 1]] +
+                [residualesDict.get(array.res_name[arrayShp - 1], residualesDict['Null'])] +
+                [float(array.hetero[arrayShp - 1])] +
+                [array.occupancy[arrayShp - 1]] +
+                [array.b_factor[arrayShp - 1]] +
+                [ssesTypeDict.get(sseMaskDict[array.chain_id[arrayShp - 1]].get(array.res_id[arrayShp - 1],
+                                                                                'Null'),
+                                  ssesTypeDict['Null'])]
             )
 
-            # for i in range(arrayShape):
-            #     nodeFeatures.append(
-            #         list(array.coord[i]) +
-            #         [atomsDict[array.atom_name[i]]] +
-            #         [elementsDict[array.element[i]]] +
-            #         [array.res_id[i]] +
-            #         [residualesDict[array.res_name[i]]] +
-            #         [float(array.hetero[i])]
-            #     )
-
             nodeFeaturesT = torch.tensor(nodeFeatures, dtype=torch.float)
-            edge_indexT = torch.tensor(edge_index, dtype=torch.long)
+            edge_indexT = torch.tensor(edge_index, dtype=torch.int)
             data = Data(x=nodeFeaturesT, edge_index=edge_indexT)
+
+            # torch.save(data, 'file')
+            # a = torch.load('file')
 
             return data
         except biotite.InvalidFileError:
@@ -293,9 +310,9 @@ set_seed(23)
 
 fileDir = '/mnt/ssd1/prog/pdbFiles'
 dataList = os.listdir(fileDir)
-dataList = dataList[:1000]
+dataList = dataList[:50]
 validatePart = 0.3
-batchSize = 50
+batchSize = 10
 epochsNum = 5
 numWorkers = 12
 
