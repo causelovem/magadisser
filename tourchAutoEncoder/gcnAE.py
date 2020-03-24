@@ -295,7 +295,7 @@ class readData(torch_geometric.data.Dataset):
             )
 
             nodeFeaturesT = torch.tensor(nodeFeatures, dtype=torch.float)
-            edge_indexT = torch.tensor(edge_index, dtype=torch.int)
+            edge_indexT = torch.tensor(edge_index, dtype=torch.long)
             data = Data(x=nodeFeaturesT, edge_index=edge_indexT)
 
             # torch.save(data, 'file')
