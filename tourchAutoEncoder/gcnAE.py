@@ -59,6 +59,7 @@ validateLoader = torch_geometric.data.DataLoader(dataValidate, batch_size=cfg.ba
                                                  num_workers=cfg.numWorkers, shuffle=True)
 
 model = AutoEncoder()
+# print(model)
 lossType = nn.MSELoss()
 # lossType = f.nll_loss
 optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-5)

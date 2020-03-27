@@ -9,30 +9,30 @@ class AutoEncoder(nn.Module):
 
         self.conv1 = GCNConv(11, 16)
         self.conv2 = GCNConv(16, 32)
+        self.conv3 = GCNConv(32, 50)
 
-        self.unconv1 = GCNConv(32, 16)
-        self.unconv2 = GCNConv(16, 11)
+        self.unconv1 = GCNConv(50, 32)
+        self.unconv2 = GCNConv(32, 16)
+        self.unconv3 = GCNConv(16, 11)
 
-        # self.encoder = nn.Sequential(
-        #     GCNConv(8, 16),
-        #     GCNConv(16, 32)
-        # )
+    def encoder(self, x, edge_index):
+        x = f.relu(self.conv1(x, edge_index))
+        x = f.relu(self.conv2(x, edge_index))
+        x = f.relu(self.conv3(x, edge_index))
 
-        # self.decoder = nn.Sequential(
-        #     GCNConv(32, 16),
-        #     GCNConv(16, 8)
-        # )
+        return x
 
-    # def forward(self, x):
+    def decoder(self, x, edge_index):
+        x = f.relu(self.unconv1(x, edge_index))
+        x = f.relu(self.unconv2(x, edge_index))
+        x = f.relu(self.unconv3(x, edge_index))
+
+        return x
+
     def forward(self, data):
         x, edge_index = data.x, data.edge_index
 
-        x = f.relu(self.conv1(x, edge_index))
-        x = f.relu(self.conv2(x, edge_index))
-        x = f.relu(self.unconv1(x, edge_index))
-        x = f.relu(self.unconv2(x, edge_index))
-        # x = self.encoder(x)
-        # print(x.shape)
-        # x = self.decoder(x)
-        # print(x.shape)
+        x = self.encoder(x, edge_index)
+        x = self.decoder(x, edge_index)
+
         return x

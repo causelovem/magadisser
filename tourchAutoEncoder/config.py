@@ -1,5 +1,12 @@
+import platform as plt
+
+
+sys = plt.system()
+print(sys)
+
 fileDir = '/mnt/ssd1/prog/pdbFiles'
-# fileDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFiles'
+if sys == 'Windows':
+    fileDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesGdata'
 
 threshold = 7
 
@@ -10,10 +17,12 @@ validatePart = 0.3
 
 batchSize = 24
 
-epochsNum = 5
+epochsNum = 10
 
 numWorkers = 12
-# numWorkers = 0
+if sys == 'Windows':
+    numWorkers = 0
 
 device = 'cpu'
-# device = 'cuda'
+if sys == 'Windows':
+    device = 'cuda'
