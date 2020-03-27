@@ -4,13 +4,7 @@ import torch.nn as nn
 # import torch.nn.functional as f
 import random
 import os
-# import biotite
-# import biotite.structure as struc
-# import biotite.structure.io as strucio
-# import biotite.application.dssp as dssp
 import torch_geometric
-# from torch_geometric.data import Data
-# from torch_geometric.nn import GCNConv
 from gaeModel import AutoEncoder
 import config as cfg
 import pdb2Gdata as p2d
@@ -37,7 +31,6 @@ class readData(torch_geometric.data.Dataset):
 
     def __getitem__(self, index):
         if cfg.pdbFile:
-            # p2d.pdb2Gdata(os.path.join(self.fileDir, self.files[index]))
             return p2d.pdb2Gdata(self.fileDir, self.files[index])
         else:
             return torch.load(os.path.join(self.fileDir, self.files[index]))
@@ -47,7 +40,7 @@ set_seed(23)
 
 fileDir = cfg.fileDir
 dataList = os.listdir(fileDir)
-dataList = dataList[:50]
+dataList = dataList[:5000]
 
 validateLength = int(len(dataList) * cfg.validatePart)
 dataSizes = [len(dataList) - validateLength, validateLength]
@@ -66,7 +59,6 @@ validateLoader = torch_geometric.data.DataLoader(dataValidate, batch_size=cfg.ba
                                                  num_workers=cfg.numWorkers, shuffle=True)
 
 model = AutoEncoder()
-# model = model.double()
 lossType = nn.MSELoss()
 # lossType = f.nll_loss
 optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-5)
@@ -78,8 +70,6 @@ for epoch in range(cfg.epochsNum):
 
     model.train()
     for data in trainLoader:
-        # print(data)
-
         data = data.to(device)
         preds = model(data).to(device)
 

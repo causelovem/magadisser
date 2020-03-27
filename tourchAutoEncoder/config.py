@@ -3,11 +3,12 @@ fileDir = '/mnt/ssd1/prog/pdbFiles'
 
 threshold = 7
 
-pdbFile = True
+# pdbFile = True
+pdbFile = False
 
 validatePart = 0.3
 
-batchSize = 10
+batchSize = 24
 
 epochsNum = 5
 

@@ -3,6 +3,7 @@ import numpy as np
 import torch
 import biotite.structure as struc
 import biotite.structure.io as strucio
+# import biotite.application.dssp as dssp
 from torch_geometric.data import Data
 import config as cfg
 
@@ -240,7 +241,6 @@ def pdb2Gdata(dirName, fileName, saveDir=False):
     if saveDir:
         torch.save(data, os.path.join(saveDir, fileName))
 
-    # print(os.path.join(dirName, fileName), type(data), type(data.x), type(data.edge_index))
     return data
 
 
