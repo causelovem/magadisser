@@ -18,14 +18,16 @@ class AutoEncoder(nn.Module):
     def encoder(self, x, edge_index):
         x = f.relu(self.conv1(x, edge_index))
         x = f.relu(self.conv2(x, edge_index))
-        x = f.relu(self.conv3(x, edge_index))
+        # x = f.relu(self.conv3(x, edge_index))
+        x = self.conv3(x, edge_index)
 
         return x
 
     def decoder(self, x, edge_index):
         x = f.relu(self.unconv1(x, edge_index))
         x = f.relu(self.unconv2(x, edge_index))
-        x = f.relu(self.unconv3(x, edge_index))
+        # x = f.relu(self.unconv3(x, edge_index))
+        x = self.unconv3(x, edge_index)
 
         return x
 

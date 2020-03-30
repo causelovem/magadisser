@@ -5,8 +5,10 @@ sys = plt.system()
 print(sys)
 
 fileDir = '/mnt/ssd1/prog/pdbFilesGdata'
+modelsDir = '-'
 if sys == 'Windows':
     fileDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesGdata'
+    modelsDir = 'F:/prog/magadisser/tourchAutoEncoder/models'
 
 threshold = 7
 
@@ -15,7 +17,7 @@ pdbFile = False
 
 validatePart = 0.3
 
-batchSize = 24
+batchSize = 30
 
 epochsNum = 10
 

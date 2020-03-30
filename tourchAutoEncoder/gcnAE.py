@@ -40,7 +40,7 @@ set_seed(23)
 
 fileDir = cfg.fileDir
 dataList = os.listdir(fileDir)
-dataList = dataList[:5000]
+# dataList = dataList[:5000]
 
 validateLength = int(len(dataList) * cfg.validatePart)
 dataSizes = [len(dataList) - validateLength, validateLength]
@@ -58,6 +58,9 @@ trainLoader = torch_geometric.data.DataLoader(dataTrain, batch_size=cfg.batchSiz
 validateLoader = torch_geometric.data.DataLoader(dataValidate, batch_size=cfg.batchSize,
                                                  num_workers=cfg.numWorkers, shuffle=True)
 
+numOfTrainButch = len(trainLoader)
+numOfValidButch = len(validateLoader)
+
 model = AutoEncoder()
 # print(model)
 lossType = nn.MSELoss()
@@ -69,21 +72,29 @@ model = model.to(device)
 for epoch in range(cfg.epochsNum):
     print('Epoch {}/{}:'.format(epoch, cfg.epochsNum - 1), flush=True)
 
+    sumLoss = 0
     model.train()
     for data in trainLoader:
         data = data.to(device)
         preds = model(data).to(device)
 
         loss = lossType(preds, data.x)
+        sumLoss += float(loss)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-    print('Train Loss: {:.4f}'.format(float(loss)), flush=True)
+    # print('Train Loss: {:.4f}'.format(float(loss)), flush=True)
+    print('Train Loss: {:.4f}'.format(float(sumLoss) / numOfTrainButch), flush=True)
 
+    sumLoss = 0
     model.eval()
     for data in validateLoader:
         data = data.to(device)
         preds = model(data).to(device)
 
         loss = lossType(preds, data.x)
-    print('Validation Loss: {:.4f}'.format(float(loss)), flush=True)
+        sumLoss += float(loss)
+    # print('Validation Loss: {:.4f}'.format(float(loss)), flush=True)
+    print('Validation Loss: {:.4f}'.format(float(sumLoss) / numOfValidButch), flush=True)
+
+torch.save(model.state_dict(), os.path.join(cfg.modelsDir, 'testModel.pt'))
