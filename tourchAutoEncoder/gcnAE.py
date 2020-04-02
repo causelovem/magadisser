@@ -8,6 +8,7 @@ import torch_geometric
 from gaeModel import AutoEncoder
 import config as cfg
 import pdb2Gdata as p2d
+from tqdm import tqdm
 
 
 def set_seed(seed):
@@ -74,7 +75,7 @@ for epoch in range(cfg.epochsNum):
 
     sumLoss = 0
     model.train()
-    for data in trainLoader:
+    for data in tqdm(trainLoader):
         data = data.to(device)
         preds = model(data).to(device)
 
@@ -88,7 +89,7 @@ for epoch in range(cfg.epochsNum):
 
     sumLoss = 0
     model.eval()
-    for data in validateLoader:
+    for data in tqdm(validateLoader):
         data = data.to(device)
         preds = model(data).to(device)
 
