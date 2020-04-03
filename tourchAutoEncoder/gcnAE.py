@@ -52,7 +52,6 @@ dataValidate = readData(fileDir, dataValidateRaw)
 
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = cfg.device
-# kwargs = {'num_workers': 1, 'pin_memory': True} if device=='cuda' else {}
 
 trainLoader = torch_geometric.data.DataLoader(dataTrain, batch_size=cfg.batchSize,
                                               num_workers=cfg.numWorkers, shuffle=True)

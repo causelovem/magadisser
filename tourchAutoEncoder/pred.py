@@ -31,8 +31,6 @@ structure = structure.to(device)
 pred = model.encoder(structure.x, structure.edge_index).to('cpu')
 pred = pred.detach().sum(dim=0) / len(pred)
 pred = pred.numpy()
-# pred = pred.data
-# print(pred)
 
 vectorDir = cfg.vectorDir
 dataList = os.listdir(vectorDir)
@@ -46,10 +44,6 @@ vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(data
 # os.chdir(ret)
 
 dist = np.array([np.linalg.norm(pred - vec) for vec in tqdm(vectors)])
-
-# for vec in tqdm(vectors):
-#     dist.append(np.linalg.norm(pred - vec))
-# dist = np.array(dist)
 
 # corr = np.corrcoef(vectors, rowvar=False)
 # ax = sns.heatmap(corr)

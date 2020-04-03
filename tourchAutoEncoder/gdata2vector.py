@@ -19,9 +19,3 @@ for file in tqdm(dataList):
     pred = model.encoder(structure.x, structure.edge_index).to('cpu')
     pred = pred.detach().sum(dim=0) / len(pred)
     np.save(os.path.join(cfg.vectorDir, file), pred.numpy())
-    # torch.save(pred.numpy(), os.path.join(cfg.vectorDir, file))
-    # pred = pred.data
-    # print(os.path.join(cfg.vectorDir, file))
-    # print(pred)
-    # print(pred.numpy())
-    # print(torch.sum(pred, dim=0) / len(pred))
