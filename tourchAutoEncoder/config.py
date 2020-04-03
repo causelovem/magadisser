@@ -4,10 +4,12 @@ import platform as plt
 sys = plt.system()
 print(sys)
 
+rawFileDir = '/mnt/ssd2/pdbFiles'
 fileDir = '/mnt/ssd1/prog/pdbFilesGdata'
 vectorDir = '-'
 modelsDir = '/mnt/ssd1/prog/magadisser/tourchAutoEncoder/models'
 if sys == 'Windows':
+    rawFileDir = '-'
     fileDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesGdata'
     vectorDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesVector'
     modelsDir = 'F:/prog/magadisser/tourchAutoEncoder/models'
