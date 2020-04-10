@@ -5,7 +5,7 @@ sys = plt.system()
 print(sys)
 
 rawFileDir = '/mnt/ssd2/pdbFiles'
-fileDir = '/mnt/ssd1/prog/pdbFilesGdata'
+fileDir = '/mnt/hdd1/pdbFilesGdata'
 vectorDir = '-'
 modelsDir = '/mnt/ssd1/prog/magadisser/tourchAutoEncoder/models'
 if sys == 'Windows':

@@ -1,18 +1,20 @@
 import os
 from tqdm import tqdm
 import config as cfg
-import pdb2Gdata_v2 as p2d
+from pdb2Gdata_v3 import pdb2Gdata
 
 
 dataList = os.listdir(cfg.rawFileDir)
 
 currDir = os.getcwd()
-myN = int(currDir[-1:])
+# myN = int(currDir[-1:])
+myN = int(os.path.basename(currDir)[3:])  # dirNNNN
 print(myN)
+totalDir = 12
 
-part = len(dataList) // 10
+part = len(dataList) // totalDir
 
-if myN == 9:
+if myN == totalDir - 1:
     print(part * myN, len(dataList))
     dataList = dataList[part * myN:]
 else:
@@ -22,7 +24,7 @@ else:
 errors = open('errors.txt', 'w')
 for file in tqdm(dataList):
     try:
-        p2d.pdb2Gdata(cfg.rawFileDir, file, cfg.fileDir)
+        pdb2Gdata(cfg.rawFileDir, file, cfg.fileDir)
     except Exception as e:
         errors.write(str(e) + '\n')
         errors.write(file + '\n\n')
