@@ -7,7 +7,7 @@ import os
 import torch_geometric
 from gaeModel import AutoEncoder
 import config as cfg
-import pdb2Gdata as p2d
+import pdb2Gdata_v2 as p2d
 from tqdm import tqdm
 
 
@@ -67,6 +67,10 @@ lossType = nn.MSELoss()
 # lossType = f.nll_loss
 optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-5)
 
+# checkpoint = torch.load(os.path.join(cfg.modelsDir, 'modelCheckpoint{}.pt'.format(epoch)))
+# model.load_state_dict(checkpoint['model_state_dict'])
+# optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
 model = model.to(device)
 
 for epoch in range(cfg.epochsNum):
@@ -85,6 +89,11 @@ for epoch in range(cfg.epochsNum):
         optimizer.step()
     # print('Train Loss: {:.4f}'.format(float(loss)), flush=True)
     print('Train Loss: {:.4f}'.format(float(sumLoss) / numOfTrainButch), flush=True)
+
+    torch.save({'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict()},
+               os.path.join(cfg.modelsDir, 'modelCheckpoint{}.pt'.format(epoch)))
+    print('Checkpoint saved to modelCheckpoint{}.pt'.format(epoch))
 
     sumLoss = 0
     model.eval()

@@ -11,13 +11,11 @@ vectorDir = cfg.vectorDir
 dataList = os.listdir(vectorDir)
 len(dataList)
 
-res = []
-for file in tqdm(dataList):
-    res.append(np.load(os.path.join(vectorDir, file)))
+vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(dataList)])
 
 wcss = []
 for i in tqdm(range(1, 20)):
-    kmeans = KMeans(n_clusters=i).fit(res)
+    kmeans = KMeans(n_clusters=i).fit(vectors)
     wcss.append(kmeans.inertia_)
 
 plt.plot(range(1, 20), wcss)
@@ -26,6 +24,6 @@ plt.xlabel('Number of clusters')
 plt.ylabel('WCSS')
 plt.show()
 
-kmeans = KMeans(n_clusters=6).fit(res)
+kmeans = KMeans(n_clusters=6).fit(vectors)
 clustSenters = kmeans.cluster_centers_
 ykmeans = kmeans.labels_

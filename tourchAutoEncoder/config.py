@@ -21,7 +21,7 @@ pdbFile = False
 
 validatePart = 0.3
 
-batchSize = 30
+batchSize = 7
 
 epochsNum = 10
 

@@ -12,14 +12,14 @@ from tqdm import tqdm
 
 if len(sys.argv) != 2:
     print('ERROR: Check your command string')
-    print('Usage: python3 pred.py <fileName>')
+    print('Usage: python3 pred.py <absoluteFileName>')
     sys.exit(-1)
 
 structure = None
 if cfg.pdbFile:
-    structure = p2d.pdb2Gdata('F:/prog/magadisser/tourchAutoEncoder/data/pdbFiles', sys.argv[1])
+    structure = p2d.pdb2Gdata(sys.argv[1])
 else:
-    structure = torch.load(os.path.join('F:/prog/magadisser/tourchAutoEncoder/data/pdbFiles', sys.argv[1]))
+    structure = torch.load(sys.argv[1])
 
 device = cfg.device
 model = AutoEncoder()
@@ -34,6 +34,7 @@ pred = pred.numpy()
 
 vectorDir = cfg.vectorDir
 dataList = os.listdir(vectorDir)
+dataListNp = np.array(dataList)
 len(dataList)
 
 vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(dataList)])
@@ -44,7 +45,15 @@ vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(data
 # os.chdir(ret)
 
 dist = np.array([np.linalg.norm(pred - vec) for vec in tqdm(vectors)])
+distNorm = dist / dist.max()
 
+distSortIndeces = np.argsort(dist)
+
+mask = distNorm <= 0.0003
+res = dataListNp[mask]
+res.shape
+
+# import seaborn as sns
 # corr = np.corrcoef(vectors, rowvar=False)
 # ax = sns.heatmap(corr)
 # plt.show()
