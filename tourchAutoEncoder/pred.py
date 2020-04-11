@@ -4,7 +4,7 @@ import os
 import sys
 from gaeModel import AutoEncoder
 import config as cfg
-import pdb2Gdata as p2d
+import pdb2Gdata_v3 as p2d
 from tqdm import tqdm
 # from sklearn.cluster import KMeans, MeanShift
 # from matplotlib import pyplot as plt
