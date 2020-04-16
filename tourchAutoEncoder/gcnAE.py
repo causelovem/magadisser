@@ -65,7 +65,7 @@ model = AutoEncoder()
 # print(model)
 lossType = nn.MSELoss()
 # lossType = f.nll_loss
-optimizer = torch.optim.Adam(model.parameters(), weight_decay=1e-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.005, weight_decay=0.001)
 
 # checkpoint = torch.load(os.path.join(cfg.modelsDir, 'modelCheckpoint{}.pt'.format(epoch)))
 # model.load_state_dict(checkpoint['model_state_dict'])

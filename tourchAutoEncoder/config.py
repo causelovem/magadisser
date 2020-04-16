@@ -14,7 +14,7 @@ if sys == 'Windows':
     fileDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesGdata'
     vectorDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesVector'
     modelsDir = 'F:/prog/magadisser/tourchAutoEncoder/models'
-    statDir = '-'
+    statDir = 'F:/prog/magadisser/tourchAutoEncoder/stat'
 
 threshold = 7
 
@@ -23,9 +23,9 @@ pdbFile = False
 
 validatePart = 0.2
 
-batchSize = 10
+batchSize = 20
 
-epochsNum = 5
+epochsNum = 10
 
 numWorkers = 12
 if sys == 'Windows':
