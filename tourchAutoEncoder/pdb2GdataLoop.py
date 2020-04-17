@@ -1,13 +1,12 @@
 import os
 from tqdm import tqdm
 import config as cfg
-from pdb2Gdata_v3 import pdb2Gdata
+from pdb2Gdata_v4 import pdb2Gdata
 
 
 dataList = os.listdir(cfg.rawFileDir)
 
 currDir = os.getcwd()
-# myN = int(currDir[-1:])
 myN = int(os.path.basename(currDir)[3:])  # dirNNNN
 print(myN)
 totalDir = 12

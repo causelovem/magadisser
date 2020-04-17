@@ -7,7 +7,7 @@ import os
 import torch_geometric
 from gaeModel import AutoEncoder
 import config as cfg
-import pdb2Gdata_v3 as p2d
+import pdb2Gdata_v4 as p2d
 from tqdm import tqdm
 
 

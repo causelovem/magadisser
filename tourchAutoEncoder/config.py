@@ -21,7 +21,7 @@ threshold = 7
 # pdbFile = True
 pdbFile = False
 
-validatePart = 0.2
+validatePart = 0.3
 
 batchSize = 20
 

@@ -31,6 +31,7 @@ residuales = [
     'GLU',
     'GLY',
     'HIS',
+    'HOH',
     'ILE',
     'LEU',
     'LYS',
@@ -49,7 +50,6 @@ residualesDict = list2OHEdict(residuales)
 
 atoms = [
     'C',
-    'C2',
     'CA',
     'CB',
     'CD',
@@ -72,6 +72,8 @@ atoms = [
     'HB2',
     'HB3',
     'HD2',
+    'HD3',
+    'HE2',
     'HG',
     'HG2',
     'HG21',
@@ -95,7 +97,6 @@ atoms = [
     'OG',
     'OG1',
     'OH',
-    'P',
     'SD',
     'SG',
     'Null'
@@ -126,7 +127,7 @@ def pdb2Gdata(dirName, fileName, saveDir=False):
                                    model=1)
 
     # уникальные цепи
-    chainIdUnique = np.uniqueu(array.chain_id)
+    chainIdUnique = np.unique(array.chain_id)
 
     data = {}
     sseMaskDict = dict([(chain, {}) for chain in chainIdUnique])
@@ -162,11 +163,13 @@ def pdb2Gdata(dirName, fileName, saveDir=False):
 
         # длина максимального вектора (для нормировки признака)
         maxNorm = max([np.linalg.norm(point) for point in oneChainArray.coord])
-        oneChainArray.coord /= maxNorm
+        if maxNorm != 0:
+            oneChainArray.coord /= maxNorm
 
         # максимальный температурный фактор (для нормировки признака)
         maxBFactor = oneChainArray.b_factor.max()
-        oneChainArray.b_factor /= maxBFactor
+        if maxBFactor != 0:
+            oneChainArray.b_factor /= maxBFactor
 
         edgeIndex = [[], []]
         nodeFeatures = []
@@ -210,6 +213,7 @@ def pdb2Gdata(dirName, fileName, saveDir=False):
     if saveDir:
         for chain, graph in data.items():
             fileNameSplit = fileName.split('.')
+            # приписываем к названию файла название цепи
             fileNameSplit[0] += chain
             torch.save(graph, os.path.join(saveDir, '.'.join(fileNameSplit)))
 
