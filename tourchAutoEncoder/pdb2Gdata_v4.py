@@ -135,15 +135,18 @@ def pdb2Gdata(dirName, fileName, saveDir=False):
         # берем текущую цепь
         oneChainArray = array[array.chain_id == chain]
 
-        # "маска" остатков СА атомов
-        resMask = oneChainArray[oneChainArray.atom_name == 'CA'].res_id
+        # исключаем heatem атомы для вычисления sse (== numpy.False)
+        notHeatemChain = oneChainArray[oneChainArray.hetero == False]
+
+        # "маска" остатков СА (не heatem) атомов
+        resMask = notHeatemChain[notHeatemChain.atom_name == 'CA'].res_id
 
         # НЕ считаем вторичную стуктуру, если в цепи нет (или мало) CA атомов
         if resMask.shape[0] < 5:
             continue
 
         # вторичная структура используя алгоритм DSSP для каждой цепи
-        sse = dssp.DsspApp.annotate_sse(oneChainArray)
+        sse = dssp.DsspApp.annotate_sse(notHeatemChain)
 
         # если sse короче маски, то расширим
         tmp = resMask.shape[0] - sse.shape[0]
@@ -158,7 +161,7 @@ def pdb2Gdata(dirName, fileName, saveDir=False):
         cellList = struc.CellList(oneChainArray, cell_size=cfg.threshold)
         adjMatrix = cellList.create_adjacency_matrix(cfg.threshold)
 
-        # вычитаем цетроиду - смещаем цетр белка в точку (0, 0, 0) (для нормировки признака)
+        # вычитаем центроиду - смещаем цетр белка в точку (0, 0, 0) (для нормировки признака)
         oneChainArray.coord -= oneChainArray.coord.mean(axis=0)
 
         # длина максимального вектора (для нормировки признака)
