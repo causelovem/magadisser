@@ -28,9 +28,8 @@ model = model.to(device)
 model.eval()
 
 structure = structure.to(device)
-pred = model.encoder(structure.x, structure.edge_index).to('cpu')
-pred = pred.detach().sum(dim=0) / len(pred)
-pred = pred.numpy()
+pred = model.encoder(structure.x, structure.edge_index).to('cpu').detach().numpy()
+pred = pred.sum(axis=0) / len(pred)
 
 vectorDir = cfg.vectorDir
 dataList = os.listdir(vectorDir)
@@ -44,12 +43,15 @@ vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(data
 # vectors = np.array([np.load(file) for file in tqdm(dataList)])
 # os.chdir(ret)
 
-dist = np.array([np.linalg.norm(pred - vec) for vec in tqdm(vectors)])
+# dist = np.array([np.linalg.norm(pred - vec) for vec in tqdm(vectors)])
+dist = np.linalg.norm(vectors - pred, axis=1)
 distNorm = dist / dist.max()
 
 distSortIndeces = np.argsort(dist)
 
-mask = distNorm <= 0.0003
+dataListNp[distSortIndeces][:20]
+
+mask = distNorm <= 0.01
 res = dataListNp[mask]
 res.shape
 

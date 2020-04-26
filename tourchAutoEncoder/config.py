@@ -13,6 +13,8 @@ if sys == 'Windows':
     rawFileDir = '-'
     fileDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesGdata'
     vectorDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesVector'
+    rawVectorDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesVectorRaw'
+    attentVectorDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesVectorAttent'
     modelsDir = 'F:/prog/magadisser/tourchAutoEncoder/models'
     statDir = 'F:/prog/magadisser/tourchAutoEncoder/stat'
 
