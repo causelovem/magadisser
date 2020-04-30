@@ -6,11 +6,9 @@ print(sys)
 
 rawFileDir = '/mnt/ssd2/pdbFiles'
 fileDir = '/mnt/hdd1/pdbFilesGdata'
-vectorDir = '-'
 modelsDir = '/mnt/ssd1/prog/magadisser/tourchAutoEncoder/models'
 statDir = '/mnt/ssd1/prog/magadisser/tourchAutoEncoder/stat'
 if sys == 'Windows':
-    rawFileDir = '-'
     fileDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesGdata'
     vectorDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesVector'
     rawVectorDir = 'F:/prog/magadisser/tourchAutoEncoder/data/pdbFilesVectorRaw'

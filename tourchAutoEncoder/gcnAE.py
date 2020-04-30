@@ -51,7 +51,7 @@ dataTrain = readData(fileDir, dataTrainRaw)
 dataValidate = readData(fileDir, dataValidateRaw)
 
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
-device = cfg.device
+device = torch.device(cfg.device)
 
 trainLoader = torch_geometric.data.DataLoader(dataTrain, batch_size=cfg.batchSize,
                                               num_workers=cfg.numWorkers, shuffle=True)
@@ -65,7 +65,8 @@ model = AutoEncoder()
 # print(model)
 lossType = nn.MSELoss()
 # lossType = f.nll_loss
-optimizer = torch.optim.Adam(model.parameters(), lr=0.005, weight_decay=0.001)
+# optimizer = torch.optim.Adam(model.parameters(), lr=0.005, weight_decay=0.001)
+optimizer = torch.optim.RMSprop(model.parameters(), lr=0.001, weight_decay=0.000001)
 
 # checkpoint = torch.load(os.path.join(cfg.modelsDir, 'modelCheckpoint{}.pt'.format(epoch)))
 # model.load_state_dict(checkpoint['model_state_dict'])

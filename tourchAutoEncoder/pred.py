@@ -49,7 +49,8 @@ distNorm = dist / dist.max()
 
 distSortIndeces = np.argsort(dist)
 
-dataListNp[distSortIndeces][:20]
+resSorted = dataListNp[distSortIndeces]
+# print(res[:20])
 
 mask = distNorm <= 0.01
 res = dataListNp[mask]
