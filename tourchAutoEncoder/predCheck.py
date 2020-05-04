@@ -9,24 +9,29 @@ rawVectorDir = cfg.rawVectorDir
 attentVectorDir = cfg.attentVectorDir
 
 dataList = os.listdir(vectorDir)
-dataListNp = np.array(dataList)
+dataListNp = np.array([file[3:-8] for file in tqdm(dataList)])
+# dataListNp = np.array(dataList)
 
-rawDataList = os.listdir(rawVectorDir)
-rawDataListNp = np.array(rawDataList)
 
-attentDataList = os.listdir(attentVectorDir)
-attentDataListNp = np.array(attentDataList)
+# rawDataList = os.listdir(rawVectorDir)
+# rawDataListNp = np.array(rawDataList)
 
-vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(dataList)])
+# attentDataList = os.listdir(attentVectorDir)
+# attentDataListNp = np.array(attentDataList)
 
-rawVectors = np.array([np.load(os.path.join(rawVectorDir, file)) for file in tqdm(rawDataList)])
+# vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(dataList)])
+vectors = np.load('F:/prog/magadisser/tourchAutoEncoder/data/vectors.npy')
 
-attentVectors = np.array([np.load(os.path.join(attentVectorDir, file)) for file in tqdm(attentDataList)])
+# rawVectors = np.array([np.load(os.path.join(rawVectorDir, file)) for file in tqdm(dataList)])
+rawVectors = np.load('F:/prog/magadisser/tourchAutoEncoder/data/rawVectors.npy')
 
-pred = vectors[200000]
-rawPred = rawVectors[200000]
-attentPred = attentVectors[200000]
-# 4netA
+# attentVectors = np.array([np.load(os.path.join(attentVectorDir, file)) for file in tqdm(dataList)])
+attentVectors = np.load('F:/prog/magadisser/tourchAutoEncoder/data/attentVectors.npy')
+
+pred = vectors[300000]
+rawPred = rawVectors[300000]
+attentPred = attentVectors[300000]
+# 6esfD
 
 dist = np.linalg.norm(vectors - pred, axis=1)
 rawDist = np.linalg.norm(rawVectors - rawPred, axis=1)
@@ -36,18 +41,26 @@ attentDist = np.linalg.norm(attentVectors - attentPred, axis=1)
 distSortIndeces = np.argsort(dist)
 dataListNp[distSortIndeces][:50]
 rawDistSortIndeces = np.argsort(rawDist)
-rawDataListNp[rawDistSortIndeces][:50]
+dataListNp[rawDistSortIndeces][:50]
 attentDistSortIndeces = np.argsort(attentDist)
-attentDataListNp[attentDistSortIndeces][:50]
+dataListNp[attentDistSortIndeces][:50]
 
 resSorted = dataListNp[distSortIndeces]
-rawResSorted = rawDataListNp[rawDistSortIndeces]
-attentResSorted = attentDataListNp[attentDistSortIndeces]
+rawResSorted = dataListNp[rawDistSortIndeces]
+attentResSorted = dataListNp[attentDistSortIndeces]
+
+testSet = resSorted[dist[dist <= dist.mean()].shape[0]:]
+siteSet = set()
+f = open('data/siteSet.txt', 'r')
+for s in f:
+    siteSet.add(s[:-1])
+f.close()
+t = testSet & siteSet
 
 
 def findPos(pdbIdC):
     pos = {}
-    pos['resSorted'] = np.argwhere(resSorted == 'pdb{}.pdb.npy'.format(pdbIdC))[0][0]
-    pos['rawResSorted'] = np.argwhere(rawResSorted == 'pdb{}.pdb.npy'.format(pdbIdC))[0][0]
-    pos['attentResSorted'] = np.argwhere(attentResSorted == 'pdb{}.pdb.npy'.format(pdbIdC))[0][0]
+    pos['resSorted'] = np.argwhere(resSorted == pdbIdC)[0][0]
+    pos['rawResSorted'] = np.argwhere(rawResSorted == pdbIdC)[0][0]
+    pos['attentResSorted'] = np.argwhere(attentResSorted == pdbIdC)[0][0]
     print(pos)
