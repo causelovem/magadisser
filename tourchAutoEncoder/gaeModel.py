@@ -7,13 +7,13 @@ class AutoEncoder(nn.Module):
     def __init__(self):
         super(AutoEncoder, self).__init__()
 
-        self.conv1 = GCNConv(88, 65)
-        # self.bn1 = BatchNorm(65)
-        self.conv2 = GCNConv(65, 50)
+        self.conv1 = GCNConv(33, 27)
+        # self.bn1 = BatchNorm(27)
+        self.conv2 = GCNConv(27, 20)
 
-        self.unconv1 = GCNConv(50, 65)
-        # self.bn2 = BatchNorm(65)
-        self.unconv2 = GCNConv(65, 88)
+        self.unconv1 = GCNConv(20, 27)
+        # self.bn2 = BatchNorm(27)
+        self.unconv2 = GCNConv(27, 33)
 
     def encoder(self, x, edge_index):
         x = f.relu(self.conv1(x, edge_index))

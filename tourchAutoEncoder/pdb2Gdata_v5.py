@@ -129,7 +129,7 @@ def pdb2Gdata(dirName, fileName, saveDir=False):
     for chain in chainIdUnique:
         sseMaskDict = {}
 
-        # берем текущую цепь, исключаем heatem атомы
+        # берем текущую цепь, исключаем heatem атомы (== numpy.False)
         oneChainArray = array[(array.chain_id == chain) & (array.hetero == False)]
 
         # только СА атомы
@@ -156,7 +156,7 @@ def pdb2Gdata(dirName, fileName, saveDir=False):
         cellList = struc.CellList(backbone, cell_size=cfg.threshold)
         adjMatrix = cellList.create_adjacency_matrix(cfg.threshold)
 
-        # вычитаем центроиду - смещаем цетр белка в точку (0, 0, 0) (для нормировки признака)
+        # вычитаем центроиду - смещаем центр белка в точку (0, 0, 0) (для нормировки признака)
         backbone.coord -= backbone.coord.mean(axis=0)
 
         # длина максимального вектора (для нормировки признака)

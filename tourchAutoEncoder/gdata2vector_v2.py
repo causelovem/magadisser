@@ -8,7 +8,7 @@ from tqdm import tqdm
 # подготавливаем модель
 device = cfg.device
 model = AutoEncoder()
-model.load_state_dict(torch.load(os.path.join(cfg.modelsDir, 'testModel2.pt')))
+model.load_state_dict(torch.load(os.path.join(cfg.modelsDir, 'testModel3.pt')))
 model = model.to(device)
 model.eval()
 
