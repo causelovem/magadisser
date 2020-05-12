@@ -28,9 +28,9 @@ rawVectors = np.load('F:/prog/magadisser/tourchAutoEncoder/data/rawVectors.npy')
 # attentVectors = np.array([np.load(os.path.join(attentVectorDir, file)) for file in tqdm(dataList)])
 attentVectors = np.load('F:/prog/magadisser/tourchAutoEncoder/data/attentVectors.npy')
 
-pred = vectors[30000]
-rawPred = rawVectors[30000]
-attentPred = attentVectors[30000]
+pred = vectors[0]
+rawPred = rawVectors[0]
+attentPred = attentVectors[0]
 # 1on7A [30000] - ПЛОХО, 21%
 # 1fagD [10000] - НОРМАЛЬНО, 67%
 # 1agdB [1000] - ОЧЕНЬ ХОРОШО, 95%
@@ -41,7 +41,6 @@ attentPred = attentVectors[30000]
 dist = np.linalg.norm(vectors - pred, axis=1)
 rawDist = np.linalg.norm(rawVectors - rawPred, axis=1)
 attentDist = np.linalg.norm(attentVectors - attentPred, axis=1)
-
 
 distSortIndeces = np.argsort(dist)
 dataListNp[distSortIndeces][:50]
@@ -54,11 +53,16 @@ resSorted = dataListNp[distSortIndeces]
 rawResSorted = dataListNp[rawDistSortIndeces]
 attentResSorted = dataListNp[attentDistSortIndeces]
 
-testSet = set(resSorted[dist[dist <= dist.mean()].shape[0]:])
+# testSet = set(resSorted[dist[dist <= dist.mean()].shape[0]:])
 f = open('data/siteSet.txt', 'r')
 siteSet = set([s[:-1] for s in f])
 f.close()
 # t = testSet & siteSet
+testSet = set(resSorted[:100])
+len(testSet & siteSet)
+testSet = set(rawResSorted[:100])
+len(testSet & siteSet)
+testSet = set(attentResSorted[:100])
 len(testSet & siteSet)
 
 
