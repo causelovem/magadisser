@@ -16,7 +16,7 @@ if sys == 'Windows':
     modelsDir = 'F:/prog/magadisser/tourchAutoEncoder/models'
     statDir = 'F:/prog/magadisser/tourchAutoEncoder/stat'
 
-threshold = 7
+threshold = 6
 
 # pdbFile = True
 pdbFile = False

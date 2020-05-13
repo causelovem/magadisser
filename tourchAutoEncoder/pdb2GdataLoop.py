@@ -1,7 +1,7 @@
 import os
 from tqdm import tqdm
 import config as cfg
-from pdb2Gdata_v5 import pdb2Gdata
+from pdb2Gdata_v6 import pdb2Gdata
 
 
 # dataList = os.listdir(cfg.rawFileDir)
