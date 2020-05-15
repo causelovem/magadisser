@@ -8,7 +8,7 @@ from tqdm import tqdm
 # подготавливаем модель
 device = cfg.device
 model = AutoEncoder()
-model.load_state_dict(torch.load(os.path.join(cfg.modelsDir, 'testModel3.pt')))
+model.load_state_dict(torch.load(os.path.join(cfg.modelsDir, 'testModel4.pt')))
 model = model.to(device)
 model.eval()
 
@@ -34,6 +34,11 @@ for file in tqdm(dataList):
     # считаем взвешенное (attention) среднее по закодированному графу белка
     dist = np.linalg.norm(pred - predAvg, axis=1)
     predAttent = pred * ((dist.max() - dist) / (dist.max() - dist.min())).reshape(-1, 1)
-    # predAttent = pred / (1 + np.exp(-((1 / np.linalg.norm(pred - predAvg, axis=1)).reshape(-1, 1))))
     predAttent = predAttent.sum(axis=0) / len(pred)
     np.save(os.path.join(cfg.attentVectorDir, file), predAttent)
+
+
+    # dist = np.linalg.norm(strucFeat - strucAvg, axis=1)
+    # predRawAttent = strucFeat * ((dist.max() - dist) / (dist.max() - dist.min())).reshape(-1, 1)
+    # predRawAttent = predRawAttent.sum(axis=0) / len(pred)
+    # np.save(os.path.join(cfg.rawAttentVectorDir, file), predRawAttent)
