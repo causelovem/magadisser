@@ -37,8 +37,8 @@ for file in tqdm(dataList):
     predAttent = predAttent.sum(axis=0) / len(pred)
     np.save(os.path.join(cfg.attentVectorDir, file), predAttent)
 
-
+    # считаем взвешенное (attention) среднее по самому графу белка
     # dist = np.linalg.norm(strucFeat - strucAvg, axis=1)
     # predRawAttent = strucFeat * ((dist.max() - dist) / (dist.max() - dist.min())).reshape(-1, 1)
-    # predRawAttent = predRawAttent.sum(axis=0) / len(pred)
+    # predRawAttent = predRawAttent.sum(axis=0) / len(strucFeat)
     # np.save(os.path.join(cfg.rawAttentVectorDir, file), predRawAttent)

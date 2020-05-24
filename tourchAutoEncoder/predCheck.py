@@ -28,20 +28,32 @@ pred = vectors[49848]
 attentPred = attentVectors[49848]
 rawPred = rawVectors[49848]
 rawAttentPred = rawAttentVectors[49848]
-# 1on7A checkAcc(30000) - ПЛОХО, 21% / 46%
-# 1fagD checkAcc(10000) - НОРМАЛЬНО, 67% / 75%
-# 1agdB checkAcc(1000) - ОЧЕНЬ ХОРОШО, 95% / 94%
-# 6esfD checkAcc(300000) - ПЛОХО, 11% / 28%
-# 1xycB checkAcc(50000) - НОРМАЛЬНО, 66% / 74%
-# 101mA checkAcc(0) - ОЧЕНЬ ХОРОШО, 100% / 100%
-# 3hsiA checkAcc(123478) - ОЧЕНЬ ПЛОХО  / 2%
-# 1f8tL checkAcc(9879) - НОРМАЛЬНО,  / 65%
-# 104mA checkAcc(7) - ОЧЕНЬ ХОРОШО,  / 100%
-# 1a8kD checkAcc(652) -  / 90%
-# 1xwrC checkAcc(49848) - ОЧЕНЬ ПЛОХО  / 2%
-# 1a75B checkAcc(569) - ПЛОХО  / 23%
-# 3gumB checkAcc(120919) - НОРМАЛЬНО / 50%
-# 2ax1B checkAcc(56678) - ХОРОШО / 71%
+
+# 1on7A checkAcc(30000) - ПЛОХО, 46%
+# 1fagD checkAcc(10000) - НОРМАЛЬНО, 75%
+# 1agdB checkAcc(1000) - ОЧЕНЬ ХОРОШО, 94%
+# 6esfD checkAcc(300000) - ПЛОХО, 28%
+# 1xycB checkAcc(50000) - НОРМАЛЬНО, 74%
+# 101mA checkAcc(0) - ОЧЕНЬ ХОРОШО, 100%
+# 3hsiA checkAcc(123478) - ОЧЕНЬ ПЛОХО 2%
+# 1f8tL checkAcc(9879) - НОРМАЛЬНО, 65%
+# 104mA checkAcc(7) - ОЧЕНЬ ХОРОШО, 100%
+# 1a8kD checkAcc(652) - ОЧЕНЬ ХОРОШО, 90%
+# 1xwrC checkAcc(49848) - ОЧЕНЬ ПЛОХО, 2%
+# 1a75B checkAcc(569) - ПЛОХО, 23%
+# 3gumB checkAcc(120919) - НОРМАЛЬНО, 50%
+# 2ax1B checkAcc(56678) - ХОРОШО, 71%
+# 3htyM checkAcc(123597) - ОЧЕНЬ ПЛОХО, 2%
+# 1awrB checkAcc(1840) - ОЧЕНЬ ХОРОШО, 99%
+# 1flrH checkAcc(10596) - НОРМАЛЬНО, 56%
+# 3a9hA checkAcc(103289) - ПЛОХО, 43%
+# 6ehqM checkAcc(299301) - ПЛОХО, 29%
+# 4e45K checkAcc(175680) - ПЛОХО, 25%
+# 2ypwL checkAcc(99450) - ПЛОХО, 27%
+# 1a1eA checkAcc(250) - ПЛОХО, 35%
+# 2as8B checkAcc(56400) - ХОРОШО, 84%
+# 5druA checkAcc(235441) - ОЧЕНЬ ХОРОШО, 11%
+# 8icfA checkAcc(333333) - ОЧЕНЬ ХОРОШО, 97%
 
 dist = np.linalg.norm(vectors - pred, axis=1)
 attentDist = np.linalg.norm(attentVectors - attentPred, axis=1)
@@ -84,9 +96,15 @@ def checkAcc(pos):
     f = open('data/siteSets/{}.txt'.format(dataListNp[pos]), 'r')
     siteSet = set([s[:-1] for s in f])
     f.close()
+    fullSet = set(dataListNp)
+    siteSet &= fullSet
     accDict = {}
-    accDict['res'] = len(set(resSorted[:100]) & siteSet)
-    accDict['resAttent'] = len(set(attentResSorted[:100]) & siteSet)
-    accDict['raw'] = len(set(rawResSorted[:100]) & siteSet)
-    accDict['rawAttent'] = len(set(rawAttentResSorted[:100]) & siteSet)
-    print(accDict)
+    # accDict['res'] = len(set(resSorted[:100]) & siteSet)
+    # accDict['resAttent'] = len(set(attentResSorted[:100]) & siteSet)
+    # accDict['raw'] = len(set(rawResSorted[:100]) & siteSet)
+    # accDict['rawAttent'] = len(set(rawAttentResSorted[:100]) & siteSet)
+    accDict['res'] = round(len(set(resSorted[:300000]) & siteSet) / len(siteSet) * 100, 5)
+    accDict['resAttent'] = round(len(set(attentResSorted[:300000]) & siteSet) / len(siteSet) * 100, 5)
+    accDict['raw'] = round(len(set(rawResSorted[:300000]) & siteSet) / len(siteSet) * 100, 2)
+    accDict['rawAttent'] = round(len(set(rawAttentResSorted[:300000]) & siteSet) / len(siteSet) * 100, 5)
+    print(dataListNp[pos], accDict)

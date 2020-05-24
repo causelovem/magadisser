@@ -38,8 +38,8 @@ resArr = np.array(sorted(resArr, key=lambda x: x[1]))
 np.save(os.path.join(cfg.statDir, 'atomStat'), atomArr)
 np.save(os.path.join(cfg.statDir, 'resStat'), resArr)
 
-# atomArr = np.load(os.path.join(cfg.statDir, 'atomStat'))
-# resArr = np.load(os.path.join(cfg.statDir, 'resStat'))
+# atomArr = np.load(os.path.join(cfg.statDir, 'atomStat.npy'))
+# resArr = np.load(os.path.join(cfg.statDir, 'resStat.npy'))
 # atomDict = dict(atomArr)
 # resDict = dict(resArr)
 

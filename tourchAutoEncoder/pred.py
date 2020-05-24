@@ -57,6 +57,6 @@ res = dataListNp[mask]
 res.shape
 
 # import seaborn as sns
-# corr = np.corrcoef(vectors, rowvar=False)
+# corr = np.corrcoef(rawAttentVectors, rowvar=False)
 # ax = sns.heatmap(corr)
 # plt.show()
