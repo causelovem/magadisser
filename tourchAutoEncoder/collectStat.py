@@ -1,3 +1,5 @@
+# "сбор" статистики
+
 import os
 import numpy as np
 import biotite.structure.io as strucio
@@ -10,6 +12,7 @@ resName = {}
 
 dataList = os.listdir(cfg.rawFileDir)
 
+# проходимся по всем файлам и считаем количество разных атомов и аминокислот
 ret = os.getcwd()
 os.chdir(cfg.rawFileDir)
 for file in tqdm(dataList):
@@ -29,6 +32,7 @@ for file in tqdm(dataList):
 os.chdir(ret)
 
 
+# переводим все в нумпай и сохраняем
 atomArr = [(key, val) for key, val in atomName.items()]
 resArr = [(key, val) for key, val in resName.items()]
 

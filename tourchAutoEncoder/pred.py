@@ -1,3 +1,5 @@
+# по обученой модели переводим графы или pdb-файлы в вектора
+
 import numpy as np
 import torch
 import os
@@ -21,16 +23,19 @@ if cfg.pdbFile:
 else:
     structure = torch.load(sys.argv[1])
 
+# считываем модель
 device = cfg.device
 model = AutoEncoder()
 model.load_state_dict(torch.load(os.path.join(cfg.modelsDir, 'testModel.pt')))
 model = model.to(device)
 model.eval()
 
+# применяем энкодер
 structure = structure.to(device)
 pred = model.encoder(structure.x, structure.edge_index).to('cpu').detach().numpy()
 pred = pred.sum(axis=0) / len(pred)
 
+# считываем существующие вектора
 vectorDir = cfg.vectorDir
 dataList = os.listdir(vectorDir)
 dataListNp = np.array(dataList)
@@ -43,6 +48,7 @@ vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(data
 # vectors = np.array([np.load(file) for file in tqdm(dataList)])
 # os.chdir(ret)
 
+# считаем расстояния
 # dist = np.array([np.linalg.norm(pred - vec) for vec in tqdm(vectors)])
 dist = np.linalg.norm(vectors - pred, axis=1)
 distNorm = dist / dist.max()
@@ -52,10 +58,12 @@ distSortIndeces = np.argsort(dist)
 resSorted = dataListNp[distSortIndeces]
 # print(res[:20])
 
+# выводим те, которые нам нужны (коэффициенты можно варировать)
 mask = distNorm <= 0.01
 res = dataListNp[mask]
 res.shape
 
+# можно построить карты корреляции
 # import seaborn as sns
 # corr = np.corrcoef(rawAttentVectors, rowvar=False)
 # ax = sns.heatmap(corr)

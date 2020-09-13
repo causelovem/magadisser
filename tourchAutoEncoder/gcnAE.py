@@ -1,3 +1,5 @@
+# основной файл обучения
+
 import numpy as np
 import torch
 import torch.nn as nn
@@ -11,6 +13,7 @@ import pdb2Gdata_v4 as p2d
 from tqdm import tqdm
 
 
+# фиксируем сиды для воспреизведения
 def set_seed(seed):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
@@ -20,6 +23,7 @@ def set_seed(seed):
     random.seed(seed)
 
 
+# класс для считывания данных из папки
 class readData(torch_geometric.data.Dataset):
     def __init__(self, fileDir, files):
         self.fileDir = fileDir
@@ -43,16 +47,19 @@ fileDir = cfg.fileDir
 dataList = os.listdir(fileDir)
 # dataList = dataList[:5000]
 
+# генерим обучающую и валидационную выборки
 validateLength = int(len(dataList) * cfg.validatePart)
 dataSizes = [len(dataList) - validateLength, validateLength]
 dataTrainRaw, dataValidateRaw = torch.utils.data.random_split(dataList, dataSizes)
 
+# считываем данные
 dataTrain = readData(fileDir, dataTrainRaw)
 dataValidate = readData(fileDir, dataValidateRaw)
 
 # device = 'cuda' if torch.cuda.is_available() else 'cpu'
 device = torch.device(cfg.device)
 
+# создаем специальные датасеты для параллельной вычитки, формировая батча, перемешивания и тд
 trainLoader = torch_geometric.data.DataLoader(dataTrain, batch_size=cfg.batchSize,
                                               num_workers=cfg.numWorkers, shuffle=True)
 validateLoader = torch_geometric.data.DataLoader(dataValidate, batch_size=cfg.batchSize,
@@ -61,6 +68,7 @@ validateLoader = torch_geometric.data.DataLoader(dataValidate, batch_size=cfg.ba
 numOfTrainButch = len(trainLoader)
 numOfValidButch = len(validateLoader)
 
+# создаем модель
 model = AutoEncoder()
 # print(model)
 lossType = nn.MSELoss()
@@ -74,9 +82,11 @@ optimizer = torch.optim.RMSprop(model.parameters(), lr=0.001, weight_decay=0.000
 
 model = model.to(device)
 
+# проходимся количество эпох раз
 for epoch in range(cfg.epochsNum):
     print('Epoch {}/{}:'.format(epoch, cfg.epochsNum - 1), flush=True)
 
+    # обучаем модель
     sumLoss = 0
     model.train()
     for data in tqdm(trainLoader):
@@ -84,18 +94,23 @@ for epoch in range(cfg.epochsNum):
         preds = model(data).to(device)
 
         loss = lossType(preds, data.x)
+        # считаем ошибку
         sumLoss += float(loss)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
     # print('Train Loss: {:.4f}'.format(float(loss)), flush=True)
+    # усредняем ошибку по батчам
     print('Train Loss: {:.4f}'.format(float(sumLoss) / numOfTrainButch), flush=True)
 
+    # сохраняем промежуток для бэкапа
+    # потом можно будет использовать эту эпоху в виде обученной модели
     torch.save({'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict()},
                os.path.join(cfg.modelsDir, 'modelCheckpoint{}.pt'.format(epoch)))
     print('Checkpoint saved to modelCheckpoint{}.pt'.format(epoch))
 
+    # проверяем на валидационной выборке
     sumLoss = 0
     model.eval()
     for data in tqdm(validateLoader):

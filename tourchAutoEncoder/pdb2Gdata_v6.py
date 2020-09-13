@@ -1,3 +1,5 @@
+# создание графов по pdb-файлам
+
 import os
 import numpy as np
 import torch
@@ -8,6 +10,7 @@ from torch_geometric.data import Data
 import config as cfg
 
 
+# быстрое создание one hot encoding
 def list2OHEdict(inList):
     inLen = len(inList)
     zeros = [0] * inLen
@@ -61,6 +64,7 @@ ssesTypeDssp = [
 
 ssesTypeDict = list2OHEdict(ssesTypeDssp)
 
+# позиционное кодирование для номера атома
 posDim = 4
 posMax = 10000
 posEncoding = np.array([

@@ -1,3 +1,5 @@
+# попытки класторизовать вектора
+
 import numpy as np
 import config as cfg
 from tqdm import tqdm
@@ -13,6 +15,8 @@ len(dataList)
 
 vectors = np.array([np.load(os.path.join(vectorDir, file)) for file in tqdm(dataList)])
 
+# как только изменение графика становится небольшим, такое количество кластеров нужновы выбирать
+# (так советую гайды)
 wcss = []
 for i in tqdm(range(1, 20)):
     kmeans = KMeans(n_clusters=i).fit(vectors)
@@ -24,6 +28,7 @@ plt.xlabel('Number of clusters')
 plt.ylabel('WCSS')
 plt.show()
 
+# кластарезация
 kmeans = KMeans(n_clusters=6).fit(vectors)
 clustSenters = kmeans.cluster_centers_
 ykmeans = kmeans.labels_

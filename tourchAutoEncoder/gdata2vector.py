@@ -1,3 +1,5 @@
+# самый первый вариант перевода выхода нейронки в вектор
+
 import torch
 import os
 from gaeModel import AutoEncoder

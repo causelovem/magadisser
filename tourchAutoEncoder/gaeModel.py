@@ -1,3 +1,6 @@
+# модель нейронной сети
+# можно эксперементировать с разными слоями и активационными функциями
+
 import torch.nn as nn
 import torch.nn.functional as f
 from torch_geometric.nn import GCNConv, BatchNorm
@@ -15,6 +18,7 @@ class AutoEncoder(nn.Module):
         # self.bn2 = BatchNorm(30)
         self.unconv2 = GCNConv(30, 37)
 
+    # после обучения будет использоваться только энкодер
     def encoder(self, x, edge_index):
         x = f.relu(self.conv1(x, edge_index))
         # x = self.bn1(x)

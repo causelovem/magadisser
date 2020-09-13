@@ -1,9 +1,12 @@
+# смотрим, какой методов перевода графа нам подходит лучше всего
+
 import numpy as np
 import os
 import config as cfg
 from tqdm import tqdm
 
 
+# считываем все имеющиеся вектора
 vectorDir = cfg.vectorDir
 rawVectorDir = cfg.rawVectorDir
 attentVectorDir = cfg.attentVectorDir
@@ -24,6 +27,7 @@ rawAttentVectors = np.load('F:/prog/magadisser/tourchAutoEncoder/data/rawAttentV
 # attentVectors = np.array([np.load(os.path.join(attentVectorDir, file)) for file in tqdm(dataList)])
 attentVectors = np.load('F:/prog/magadisser/tourchAutoEncoder/data/attentVectors.npy')
 
+# выбираем тот, которые будем "предсказывать"
 pred = vectors[49848]
 attentPred = attentVectors[49848]
 rawPred = rawVectors[49848]
@@ -55,22 +59,27 @@ rawAttentPred = rawAttentVectors[49848]
 # 5druA checkAcc(235441) - ОЧЕНЬ ХОРОШО, 11%
 # 8icfA checkAcc(333333) - ОЧЕНЬ ХОРОШО, 97%
 
+# для каждого из типов векторов
+# считаем расстояние
 dist = np.linalg.norm(vectors - pred, axis=1)
 attentDist = np.linalg.norm(attentVectors - attentPred, axis=1)
 rawDist = np.linalg.norm(rawVectors - rawPred, axis=1)
 rawAttentDist = np.linalg.norm(rawAttentVectors - rawAttentPred, axis=1)
 
+# сортируем значения
 resSorted = dataListNp[np.argsort(dist)]
 attentResSorted = dataListNp[np.argsort(attentDist)]
 rawResSorted = dataListNp[np.argsort(rawDist)]
 rawAttentResSorted = dataListNp[np.argsort(rawAttentDist)]
 
+# смотрим первые 50
 resSorted[:50]
 attentResSorted[:50]
 rawResSorted[:50]
 rawAttentResSorted[:50]
 
 
+# с помощью фунции можно посмотреть, на какое место попал реально похожий белок
 def findPos(pdbIdC):
     pos = {}
     pos['resSorted'] = np.argwhere(resSorted == pdbIdC)[0][0]
@@ -80,6 +89,9 @@ def findPos(pdbIdC):
     print(pos)
 
 
+# проверяем точность по файлам, полученным с сайтов
+# код написан без должного форматирования для более удобного копирования в консоль,
+# чтобы производить тестирование "интерактивно"
 def checkAcc(pos):
     # norms
     dist = np.linalg.norm(vectors - vectors[pos], axis=1)
